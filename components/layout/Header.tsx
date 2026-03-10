@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { navItems } from "@/lib/placeholder-data";
+
+const navItems = [
+  { label: "Home", href: "/" },
+  { label: "WerkHard", href: "/werkhard" },
+  { label: "Skryf", href: "/skryf" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,7 +21,7 @@ export default function Header() {
           href="/"
           className="font-serif text-lg tracking-wide text-parchment-100 hover:text-white transition-colors duration-200"
         >
-          The Commonplace
+          Spencesa.co.za
         </Link>
 
         <nav aria-label="Main navigation" className="hidden md:block">
