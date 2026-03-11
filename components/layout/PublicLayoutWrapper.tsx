@@ -1,0 +1,47 @@
+"use client";
+
+import { useEffect, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import Footer from "./Footer";
+import Header from "./Header";
+
+const BYPASS_PREFIXES = ["/dashboard", "/login"];
+
+export default function PublicLayoutWrapper({ children }: { children: ReactNode }) {
+  const { isAdmin, isLoading } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const isBypassRoute = BYPASS_PREFIXES.some((prefix) =>
+    pathname.startsWith(prefix),
+  );
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (isAdmin && !isBypassRoute) {
+      router.replace("/dashboard");
+    }
+  }, [isAdmin, isBypassRoute, isLoading, router]);
+
+  if (isBypassRoute) {
+    return <>{children}</>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
+        <span className="block w-px h-8 bg-ink-600 animate-pulse" aria-hidden="true" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Header />
+      <main className="flex-1">{children}</main>
+      <Footer />
+    </>
+  );
+}
