@@ -1,78 +1,115 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 export default function LoginPage() {
+  const supabase = getSupabaseBrowserClient();
   const router = useRouter();
-  const [email, setEmail] = useState("lario@vividgraphics.co.za");
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const inputClass = [
+    "w-full bg-ink-800 text-parchment-200 placeholder:text-parchment-600",
+    "border border-ink-500 rounded-md px-4 py-3 text-sm font-body",
+    "transition-colors duration-200",
+    "focus:outline-none focus:border-parchment-500 focus:ring-1 focus:ring-parchment-500/30",
+  ].join(" ");
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setLoading(true);
     setError("");
+    setLoading(true);
 
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
     });
 
-    if (!response.ok) {
-      setError("Login failed. Check your email/password and try again.");
+    if (error) {
+      setError("Verkeerde e-pos of wagwoord. Probeer weer.");
       setLoading(false);
       return;
     }
 
-    router.push("/admin");
-    router.refresh();
+    router.replace("/dashboard");
   }
 
   return (
-    <section className="container-narrow py-20">
-      <div className="mx-auto max-w-md rounded-xl border border-ink-700 bg-ink-800 p-8 shadow-lg">
-        <h1 className="font-serif text-3xl text-parchment-100">Admin Login</h1>
-        <p className="mt-2 text-sm text-parchment-400">
-          Sign in to access the admin section.
-        </p>
+    <div className="min-h-screen bg-ink-900 flex items-center justify-center px-6">
+      <div className="w-full max-w-sm animate-fade-up opacity-0">
+        <div className="text-center mb-10">
+          <p className="font-sans text-2xs tracking-widest uppercase text-parchment-600 mb-4">
+            Spencesa
+          </p>
+          <h1 className="font-serif text-2xl text-parchment-100">Welkom terug.</h1>
+        </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-          <label className="block text-sm text-parchment-300">
-            Email
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="email"
+              className="font-sans text-xs tracking-wide text-parchment-500"
+            >
+              E-pos
+            </label>
             <input
+              id="email"
               type="email"
+              autoComplete="email"
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="mt-2 w-full rounded-md border border-ink-600 bg-ink-900 px-3 py-2 text-parchment-100 outline-none focus:border-gold-500"
+              placeholder="jy@spencesa.co.za"
+              className={inputClass}
             />
-          </label>
+          </div>
 
-          <label className="block text-sm text-parchment-300">
-            Password
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="password"
+              className="font-sans text-xs tracking-wide text-parchment-500"
+            >
+              Wagwoord
+            </label>
             <input
+              id="password"
               type="password"
+              autoComplete="current-password"
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="mt-2 w-full rounded-md border border-ink-600 bg-ink-900 px-3 py-2 text-parchment-100 outline-none focus:border-gold-500"
+              placeholder="••••••••"
+              className={inputClass}
             />
-          </label>
+          </div>
 
-          {error ? <p className="text-sm text-red-400">{error}</p> : null}
+          {error ? (
+            <p className="font-sans text-xs text-peach" role="alert">
+              {error}
+            </p>
+          ) : null}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-gold-500 px-4 py-2 font-semibold text-ink-900 hover:bg-gold-400 disabled:cursor-not-allowed disabled:opacity-70"
+            className={[
+              "mt-2 w-full font-sans text-sm tracking-wide",
+              "bg-parchment-200 text-ink-900 border border-parchment-200",
+              "hover:bg-parchment-100 rounded-md py-3",
+              "transition-all duration-200",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-parchment-400/40",
+              loading ? "opacity-60 cursor-wait" : "",
+            ].join(" ")}
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Teken in…" : "Teken in"}
           </button>
         </form>
       </div>
-    </section>
+    </div>
   );
 }

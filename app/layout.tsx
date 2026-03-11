@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import PublicLayoutWrapper from "@/components/layout/PublicLayoutWrapper";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: {
-    default: "The Commonplace | A Personal Journal",
-    template: "%s | The Commonplace",
+    default: "Spencesa | Ek WerkHard",
+    template: "%s | Spencesa",
   },
   description:
-    "Essays, observations, and reflections on literature, craft, and the examined life.",
+    "Essays, aantekeninge en nadenkings oor tegnologie, dissipline en die lewe.",
   openGraph: {
-    siteName: "The Commonplace",
+    siteName: "Spencesa",
     type: "website",
   },
 };
@@ -20,11 +20,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="af" className="scroll-smooth">
       <body className="min-h-screen flex flex-col bg-ink-900 antialiased">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <AuthProvider>
+          <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
+        </AuthProvider>
       </body>
     </html>
   );
