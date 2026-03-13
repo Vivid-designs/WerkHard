@@ -2,11 +2,11 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase-browser";
 
 export default function LoginPage() {
-  const supabase = getSupabaseBrowserClient();
   const router = useRouter();
+  const supabaseReady = isSupabaseConfigured();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +24,14 @@ export default function LoginPage() {
     event.preventDefault();
     setError("");
     setLoading(true);
+
+    if (!supabaseReady) {
+      setError("Supabase is nie opgestel nie. Stel NEXT_PUBLIC_SUPABASE_URL en NEXT_PUBLIC_SUPABASE_ANON_KEY op.");
+      setLoading(false);
+      return;
+    }
+
+    const supabase = getSupabaseBrowserClient();
 
     const { error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
@@ -96,14 +104,14 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !supabaseReady}
             className={[
               "mt-2 w-full font-sans text-sm tracking-wide",
               "bg-parchment-200 text-ink-900 border border-parchment-200",
               "hover:bg-parchment-100 rounded-md py-3",
               "transition-all duration-200",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-parchment-400/40",
-              loading ? "opacity-60 cursor-wait" : "",
+              loading || !supabaseReady ? "opacity-60 cursor-not-allowed" : "",
             ].join(" ")}
           >
             {loading ? "Teken in…" : "Teken in"}

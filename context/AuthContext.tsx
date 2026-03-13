@@ -9,7 +9,7 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { isAdminUser } from "@/lib/admin-guard";
-import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase-browser";
 
 interface AuthContextValue {
   user: User | null;
@@ -28,13 +28,18 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const supabase = getSupabaseBrowserClient();
-
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setIsLoading(false);
+      return;
+    }
+
+    const supabase = getSupabaseBrowserClient();
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -50,9 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase]);
+  }, []);
 
   const signOut = async () => {
+    if (!isSupabaseConfigured()) {
+      return;
+    }
+
+    const supabase = getSupabaseBrowserClient();
     await supabase.auth.signOut();
   };
 
