@@ -5,14 +5,27 @@ const ADMIN_EMAIL_ALLOWLIST = (process.env.NEXT_PUBLIC_ADMIN_EMAIL_ALLOWLIST ?? 
   .map((email) => email.trim().toLowerCase())
   .filter(Boolean);
 
-function hasAdminRoleInMetadata(user: User): boolean {
-  const metadataRole =
-    user.app_metadata?.role ??
-    user.user_metadata?.role ??
-    user.app_metadata?.user_role ??
-    user.user_metadata?.user_role;
+function roleIncludesAdmin(role: unknown): boolean {
+  if (typeof role === "string") {
+    return role.trim().toLowerCase() === "admin";
+  }
 
-  return metadataRole === "admin";
+  if (Array.isArray(role)) {
+    return role.some((entry) => roleIncludesAdmin(entry));
+  }
+
+  return false;
+}
+
+function hasAdminRoleInMetadata(user: User): boolean {
+  return (
+    roleIncludesAdmin(user.app_metadata?.role) ||
+    roleIncludesAdmin(user.user_metadata?.role) ||
+    roleIncludesAdmin(user.app_metadata?.user_role) ||
+    roleIncludesAdmin(user.user_metadata?.user_role) ||
+    roleIncludesAdmin(user.app_metadata?.roles) ||
+    roleIncludesAdmin(user.user_metadata?.roles)
+  );
 }
 
 function isAllowlistedAdminEmail(user: User): boolean {
