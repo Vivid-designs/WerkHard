@@ -11,11 +11,17 @@ import type { Session, User } from "@supabase/supabase-js";
 import { isAdminUser } from "@/lib/admin-guard";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase-browser";
 
+interface SignInCredentials {
+  email: string;
+  password: string;
+}
+
 interface AuthContextValue {
   user: User | null;
   session: Session | null;
   isAdmin: boolean;
   isLoading: boolean;
+  signInWithPassword: (credentials: SignInCredentials) => Promise<string | null>;
   signOut: () => Promise<void>;
 }
 
@@ -24,6 +30,7 @@ const AuthContext = createContext<AuthContextValue>({
   session: null,
   isAdmin: false,
   isLoading: true,
+  signInWithPassword: async () => "Supabase is not configured.",
   signOut: async () => {},
 });
 
@@ -57,6 +64,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  const signInWithPassword = async ({ email, password }: SignInCredentials) => {
+    if (!isSupabaseConfigured()) {
+      return "Supabase is nie opgestel nie. Stel NEXT_PUBLIC_SUPABASE_URL en NEXT_PUBLIC_SUPABASE_ANON_KEY op.";
+    }
+
+    const supabase = getSupabaseBrowserClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    return error?.message ?? null;
+  };
+
   const signOut = async () => {
     if (!isSupabaseConfigured()) {
       return;
@@ -73,6 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         isAdmin: isAdminUser(user),
         isLoading,
+        signInWithPassword,
         signOut,
       }}
     >

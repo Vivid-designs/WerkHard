@@ -10,7 +10,7 @@ export default function AdminHeader() {
 
   const handleSignOut = async () => {
     await signOut();
-    router.replace("/");
+    router.replace("/login");
   };
 
   return (
