@@ -1,17 +1,23 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase-browser";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const supabaseReady = isSupabaseConfigured();
+  const { isAdmin, isLoading, signInWithPassword } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && isAdmin) {
+      router.replace("/dashboard");
+    }
+  }, [isAdmin, isLoading, router]);
 
   const inputClass = [
     "w-full bg-ink-800 text-parchment-200 placeholder:text-parchment-600",
@@ -25,20 +31,9 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    if (!supabaseReady) {
-      setError("Supabase is nie opgestel nie. Stel NEXT_PUBLIC_SUPABASE_URL en NEXT_PUBLIC_SUPABASE_ANON_KEY op.");
-      setLoading(false);
-      return;
-    }
+    const signInError = await signInWithPassword({ email, password });
 
-    const supabase = getSupabaseBrowserClient();
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-
-    if (error) {
+    if (signInError) {
       setError("Verkeerde e-pos of wagwoord. Probeer weer.");
       setLoading(false);
       return;
@@ -104,14 +99,14 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading || !supabaseReady}
+            disabled={loading || isLoading}
             className={[
               "mt-2 w-full font-sans text-sm tracking-wide",
               "bg-parchment-200 text-ink-900 border border-parchment-200",
               "hover:bg-parchment-100 rounded-md py-3",
               "transition-all duration-200",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-parchment-400/40",
-              loading || !supabaseReady ? "opacity-60 cursor-not-allowed" : "",
+              loading || isLoading ? "opacity-60 cursor-not-allowed" : "",
             ].join(" ")}
           >
             {loading ? "Teken in…" : "Teken in"}
