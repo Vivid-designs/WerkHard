@@ -2,10 +2,10 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
-  const supabase = getSupabaseBrowserClient();
+  const { signInWithPassword } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -25,12 +25,9 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
+    const authError = await signInWithPassword(email, password);
 
-    if (error) {
+    if (authError) {
       setError("Verkeerde e-pos of wagwoord. Probeer weer.");
       setLoading(false);
       return;

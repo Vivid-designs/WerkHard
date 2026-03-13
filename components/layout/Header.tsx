@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -9,11 +11,19 @@ const navItems = [
   { label: "Skryf", href: "/skryf" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
-  { label: "Login", href: "/login" },
 ];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const router = useRouter();
+
+  const isSignedIn = user !== null;
+
+  async function handleSignOut() {
+    await signOut();
+    router.replace("/login");
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-ink-700 bg-ink-900/90 backdrop-blur-sm">
@@ -37,6 +47,26 @@ export default function Header() {
                 </Link>
               </li>
             ))}
+            {isSignedIn ? (
+              <li>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="font-sans text-xs tracking-widest uppercase text-parchment-400 hover:text-parchment-100 transition-colors duration-200"
+                >
+                  Logout
+                </button>
+              </li>
+            ) : (
+              <li>
+                <Link
+                  href="/login"
+                  className="font-sans text-xs tracking-widest uppercase text-parchment-400 hover:text-parchment-100 transition-colors duration-200"
+                >
+                  Login
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
 
@@ -69,6 +99,28 @@ export default function Header() {
                 </Link>
               </li>
             ))}
+            <li>
+              {isSignedIn ? (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await handleSignOut();
+                    setMenuOpen(false);
+                  }}
+                  className="font-sans text-xs tracking-widest uppercase text-parchment-300 hover:text-parchment-100 transition-colors duration-200"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="font-sans text-xs tracking-widest uppercase text-parchment-300 hover:text-parchment-100 transition-colors duration-200"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
+            </li>
           </ul>
         </nav>
       )}

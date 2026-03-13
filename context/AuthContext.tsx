@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Session, User } from "@supabase/supabase-js";
+import type { AuthError, Session, User } from "@supabase/supabase-js";
 import { isAdminUser } from "@/lib/admin-guard";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
@@ -16,6 +16,7 @@ interface AuthContextValue {
   session: Session | null;
   isAdmin: boolean;
   isLoading: boolean;
+  signInWithPassword: (email: string, password: string) => Promise<AuthError | null>;
   signOut: () => Promise<void>;
 }
 
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContextValue>({
   session: null,
   isAdmin: false,
   isLoading: true,
+  signInWithPassword: async () => null,
   signOut: async () => {},
 });
 
@@ -52,6 +54,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
+  const signInWithPassword = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    return error;
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
@@ -63,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         isAdmin: isAdminUser(user),
         isLoading,
+        signInWithPassword,
         signOut,
       }}
     >
