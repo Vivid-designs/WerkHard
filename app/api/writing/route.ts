@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireAdminUser } from "@/lib/admin-users";
 import {
   getAllWritingAdmin,
@@ -25,6 +26,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as WritingInput;
     const piece = await createWriting({ ...body, author_id: admin.userId });
+
+    // Ensure fresh public/admin data after creation.
+    revalidatePath("/skryf");
+    revalidatePath(`/skryf/${piece.slug}`);
+    revalidatePath("/dashboard/writing");
+
     return NextResponse.json({ piece }, { status: 201 });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 400 });

@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireAdminUser } from "@/lib/admin-users";
 import { getWritingById, updateWriting, deleteWriting, type WritingInput } from "@/lib/writing-service";
 
@@ -21,7 +22,16 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   const body = (await request.json()) as Partial<WritingInput>;
 
   try {
+    const existing = await getWritingById(params.id);
     const piece = await updateWriting(params.id, body);
+
+    revalidatePath("/skryf");
+    revalidatePath(`/skryf/${piece.slug}`);
+    if (existing?.slug && existing.slug !== piece.slug) {
+      revalidatePath(`/skryf/${existing.slug}`);
+    }
+    revalidatePath("/dashboard/writing");
+
     return NextResponse.json({ piece });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 400 });
@@ -33,7 +43,15 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   if (!admin) return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
 
   try {
+    const existing = await getWritingById(params.id);
     await deleteWriting(params.id);
+
+    revalidatePath("/skryf");
+    if (existing?.slug) {
+      revalidatePath(`/skryf/${existing.slug}`);
+    }
+    revalidatePath("/dashboard/writing");
+
     return NextResponse.json({ success: true });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 400 });
