@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { isAdmin, isLoading, signInWithPassword } = useAuth();
+  const { isAuthenticated, isLoading, signInWithPassword } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,10 +14,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && isAdmin) {
+    if (!isLoading && isAuthenticated) {
       router.replace("/dashboard");
     }
-  }, [isAdmin, isLoading, router]);
+  }, [isAuthenticated, isLoading, router]);
 
   const inputClass = [
     "w-full bg-ink-800 text-parchment-200 placeholder:text-parchment-600",

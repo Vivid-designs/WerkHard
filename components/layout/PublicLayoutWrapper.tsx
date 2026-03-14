@@ -9,7 +9,7 @@ import Header from "./Header";
 const BYPASS_PREFIXES = ["/dashboard", "/login"];
 
 export default function PublicLayoutWrapper({ children }: { children: ReactNode }) {
-  const { isAdmin, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -20,10 +20,10 @@ export default function PublicLayoutWrapper({ children }: { children: ReactNode 
   useEffect(() => {
     if (isLoading) return;
 
-    if (isAdmin && !isBypassRoute) {
+    if (isAuthenticated && !isBypassRoute) {
       router.replace("/dashboard");
     }
-  }, [isAdmin, isBypassRoute, isLoading, router]);
+  }, [isAuthenticated, isBypassRoute, isLoading, router]);
 
   if (isBypassRoute) {
     return <>{children}</>;
