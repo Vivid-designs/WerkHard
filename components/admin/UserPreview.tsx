@@ -2,21 +2,25 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import type { UserProfile } from "@/lib/admin-users";
 import { formatDateShort } from "@/lib/utils";
 
 export default function UserPreview() {
+  const { session } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/admin/users")
+    fetch("/api/admin/users", {
+      headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : undefined,
+    })
       .then((response) => response.json())
       .then((data) => setUsers((data.users ?? []).slice(0, 5)))
       .catch(() => setError("Kon nie gebruikers laai nie."))
       .finally(() => setLoading(false));
-  }, []);
+    }, [session?.access_token]);
 
   return (
     <section aria-labelledby="user-preview-heading">

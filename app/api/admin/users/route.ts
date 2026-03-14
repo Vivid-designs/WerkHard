@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { fetchAllUsers, requireAdminUser } from "@/lib/admin-users";
 
 export const runtime = "nodejs";
 
-export async function GET() {
-  const admin = await requireAdminUser();
+export async function GET(request: NextRequest) {
+  const admin = await requireAdminUser(request);
 
   if (!admin) {
     return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
