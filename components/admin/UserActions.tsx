@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import type { UserProfile } from "@/lib/admin-users";
 
 interface UserActionsProps {
@@ -11,10 +12,17 @@ interface UserActionsProps {
 
 type ActionState = "idle" | "loading" | "confirm_delete" | "editing";
 
-async function apiPatch(id: string, body: Record<string, unknown>) {
+async function apiPatch(
+  id: string,
+  body: Record<string, unknown>,
+  accessToken?: string,
+) {
   const response = await fetch(`/api/admin/users/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
     body: JSON.stringify(body),
   });
 
@@ -25,6 +33,7 @@ async function apiPatch(id: string, body: Record<string, unknown>) {
 }
 
 export default function UserActions({ user, currentId, onRefresh }: UserActionsProps) {
+  const { session } = useAuth();
   const [state, setState] = useState<ActionState>("idle");
   const [editName, setEditName] = useState(user.full_name ?? "");
   const [error, setError] = useState("");
@@ -47,7 +56,10 @@ export default function UserActions({ user, currentId, onRefresh }: UserActionsP
 
   async function handleDelete() {
     await run(async () => {
-      const response = await fetch(`/api/admin/users/${user.id}`, { method: "DELETE" });
+      const response = await fetch(`/api/admin/users/${user.id}`, {
+        method: "DELETE",
+        headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : undefined,
+      });
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error ?? "Kon nie verwyder nie.");
@@ -59,7 +71,10 @@ export default function UserActions({ user, currentId, onRefresh }: UserActionsP
     await run(() =>
       fetch(`/api/admin/users/${user.id}/reset-password`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
         body: JSON.stringify({ email: user.email }),
       }).then(async (response) => {
         if (!response.ok) {
@@ -71,7 +86,9 @@ export default function UserActions({ user, currentId, onRefresh }: UserActionsP
   }
 
   async function handleSaveEdit() {
-    await run(() => apiPatch(user.id, { action: "update_profile", full_name: editName }));
+    await run(() =>
+      apiPatch(user.id, { action: "update_profile", full_name: editName }, session?.access_token),
+    );
     setState("idle");
   }
 
@@ -139,7 +156,9 @@ export default function UserActions({ user, currentId, onRefresh }: UserActionsP
 
       {!isSelf && (
         <button
-          onClick={() => run(() => apiPatch(user.id, { action: user.blocked ? "unblock" : "block" }))}
+          onClick={() =>
+            run(() => apiPatch(user.id, { action: user.blocked ? "unblock" : "block" }, session?.access_token))
+          }
           disabled={state === "loading"}
           className={user.blocked ? btnSage : btnPeach}
         >
@@ -150,7 +169,9 @@ export default function UserActions({ user, currentId, onRefresh }: UserActionsP
       {!isSelf && (
         <button
           onClick={() =>
-            run(() => apiPatch(user.id, { action: user.is_admin ? "remove_admin" : "set_admin" }))
+            run(() =>
+              apiPatch(user.id, { action: user.is_admin ? "remove_admin" : "set_admin" }, session?.access_token),
+            )
           }
           disabled={state === "loading"}
           className={btnMuted}

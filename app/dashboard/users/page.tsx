@@ -19,7 +19,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export default function UsersPage() {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, session } = useAuth();
 
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,9 @@ export default function UsersPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/admin/users");
+      const response = await fetch("/api/admin/users", {
+        headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : undefined,
+      });
       if (!response.ok) throw new Error("Kon nie laai nie.");
       const data = await response.json();
       setUsers(data.users ?? []);
@@ -42,7 +44,7 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+    }, [session?.access_token]);
 
   useEffect(() => {
     load();

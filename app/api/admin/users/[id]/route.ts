@@ -8,7 +8,7 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(request);
   if (!admin) {
     return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
   }
@@ -25,35 +25,50 @@ export async function PATCH(
   }
 
   try {
+    let mutationError: Error | null = null;
+
     switch (action) {
-      case "block":
-        await getSupabaseAdmin()
+      case "block": {
+        const { error } = await getSupabaseAdmin()
           .from("profiles")
           .update({ blocked: true, blocked_at: new Date().toISOString() })
           .eq("id", id);
+        mutationError = error;
         break;
-      case "unblock":
-        await getSupabaseAdmin()
+      }
+      case "unblock": {
+        const { error } = await getSupabaseAdmin()
           .from("profiles")
           .update({ blocked: false, blocked_at: null })
           .eq("id", id);
+        mutationError = error;
         break;
-      case "set_admin":
-        await getSupabaseAdmin().from("profiles").update({ is_admin: true }).eq("id", id);
+      }
+      case "set_admin": {
+        const { error } = await getSupabaseAdmin().from("profiles").update({ is_admin: true }).eq("id", id);
+        mutationError = error;
         break;
-      case "remove_admin":
-        await getSupabaseAdmin().from("profiles").update({ is_admin: false }).eq("id", id);
+      }
+      case "remove_admin": {
+        const { error } = await getSupabaseAdmin().from("profiles").update({ is_admin: false }).eq("id", id);
+        mutationError = error;
         break;
+      }
       case "update_profile": {
         const { full_name } = body as { full_name?: string };
-        await getSupabaseAdmin()
+        const { error } = await getSupabaseAdmin()
           .from("profiles")
           .update({ full_name: full_name ?? null })
           .eq("id", id);
+        mutationError = error;
         break;
       }
       default:
         return NextResponse.json({ error: "Onbekende aksie." }, { status: 400 });
+    }
+
+    if (mutationError) {
+      throw mutationError;
     }
 
     return NextResponse.json({ success: true });
@@ -64,10 +79,10 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(request);
   if (!admin) {
     return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
   }

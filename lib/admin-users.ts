@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { type NextRequest } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 export interface UserProfile {
@@ -57,8 +58,26 @@ function getAccessTokenFromSupabaseCookie(): string | null {
   return tryParseCookieToken(authCookie.value);
 }
 
-export async function requireAdminUser(): Promise<{ userId: string } | null> {
-  const accessToken = getAccessTokenFromSupabaseCookie();
+function getAccessTokenFromAuthorizationHeader(request: NextRequest): string | null {
+  const authHeader = request.headers.get("authorization");
+
+  if (!authHeader) {
+    return null;
+  }
+
+  const [scheme, token] = authHeader.split(" ");
+
+  if (scheme?.toLowerCase() !== "bearer" || !token) {
+    return null;
+  }
+
+  return token;
+}
+
+export async function requireAdminUser(request?: NextRequest): Promise<{ userId: string } | null> {
+  const accessToken =
+    (request ? getAccessTokenFromAuthorizationHeader(request) : null) ??
+    getAccessTokenFromSupabaseCookie();
 
   if (!accessToken) {
     return null;
