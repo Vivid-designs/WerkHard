@@ -3,9 +3,15 @@
  * Secrets never leave this file or the API routes that import it.
  */
 
-const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID!;
-const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET!;
-const REFRESH_TOKEN = process.env.SPOTIFY_REFRESH_TOKEN!;
+function getRequiredEnv(name: string): string {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`Missing required Spotify environment variable: ${name}`);
+  }
+
+  return value;
+}
 
 const TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
 const NOW_PLAYING_URL = "https://api.spotify.com/v1/me/player/currently-playing";
@@ -13,7 +19,11 @@ const TOP_TRACKS_URL =
   "https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=short_term";
 
 async function getAccessToken(): Promise<string> {
-  const basic = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
+  const clientId = getRequiredEnv("SPOTIFY_CLIENT_ID");
+  const clientSecret = getRequiredEnv("SPOTIFY_CLIENT_SECRET");
+  const refreshToken = getRequiredEnv("SPOTIFY_REFRESH_TOKEN");
+
+  const basic = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
   const res = await fetch(TOKEN_ENDPOINT, {
     method: "POST",
@@ -23,7 +33,7 @@ async function getAccessToken(): Promise<string> {
     },
     body: new URLSearchParams({
       grant_type: "refresh_token",
-      refresh_token: REFRESH_TOKEN,
+      refresh_token: refreshToken,
     }),
     cache: "no-store",
   });
@@ -33,6 +43,11 @@ async function getAccessToken(): Promise<string> {
   }
 
   const data = await res.json();
+
+  if (!data.access_token) {
+    throw new Error("Spotify token response did not include an access_token");
+  }
+
   return data.access_token as string;
 }
 
