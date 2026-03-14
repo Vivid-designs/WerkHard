@@ -1,18 +1,42 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
+
+const SPOTIFY_AUTH_RESULT_COOKIE = "spotify_auth_result";
+
+interface SpotifyAuthResultCookie {
+  refreshToken: string;
+  expiresIn?: number;
+  accessTokenReceived: boolean;
+}
 
 interface SpotifyAuthPageProps {
   searchParams: {
-    refresh_token?: string;
-    access_token?: string;
-    expires_in?: string;
     error?: string;
   };
 }
 
-export default function SpotifyAuthPage({ searchParams }: SpotifyAuthPageProps) {
-  const refreshToken = searchParams.refresh_token;
-  const accessToken = searchParams.access_token;
-  const expiresIn = searchParams.expires_in;
+function fromCookiePayload(value: string): SpotifyAuthResultCookie | null {
+  try {
+    const parsed = JSON.parse(Buffer.from(value, "base64url").toString("utf8"));
+
+    if (!parsed || typeof parsed !== "object" || typeof parsed.refreshToken !== "string") {
+      return null;
+    }
+
+    return {
+      refreshToken: parsed.refreshToken,
+      expiresIn: typeof parsed.expiresIn === "number" ? parsed.expiresIn : undefined,
+      accessTokenReceived: Boolean(parsed.accessTokenReceived),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export default async function SpotifyAuthPage({ searchParams }: SpotifyAuthPageProps) {
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get(SPOTIFY_AUTH_RESULT_COOKIE)?.value;
+  const authResult = authCookie ? fromCookiePayload(authCookie) : null;
   const error = searchParams.error;
 
   return (
@@ -49,18 +73,18 @@ export default function SpotifyAuthPage({ searchParams }: SpotifyAuthPageProps) 
         </div>
       ) : null}
 
-      {refreshToken ? (
+      {authResult ? (
         <section className="mt-8 rounded border border-green-200 bg-green-50 p-4">
           <h2 className="text-lg font-semibold text-green-900">Success 🎉</h2>
           <p className="mt-2 text-green-900">
             Save this value as <code>SPOTIFY_REFRESH_TOKEN</code> in your environment.
           </p>
           <pre className="mt-3 overflow-x-auto rounded bg-white p-3 text-sm text-green-900">
-            {refreshToken}
+            {authResult.refreshToken}
           </pre>
-          {accessToken ? (
+          {authResult.accessTokenReceived ? (
             <p className="mt-3 text-sm text-green-800">
-              Temporary access token received (expires in {expiresIn ?? "unknown"} seconds).
+              Temporary access token received (expires in {authResult.expiresIn ?? "unknown"} seconds).
             </p>
           ) : null}
         </section>
