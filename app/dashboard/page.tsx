@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useId, useState, type FormEvent } from "react";
 import {
   mockWritingEntries,
@@ -353,6 +354,29 @@ export default function DashboardPage() {
         <StatChip label="Gepubliseer" value={publishedCount} />
         <StatChip label="Konsepte" value={draftCount} />
       </div>
+
+      <section
+        aria-labelledby="spotify-auth-heading"
+        className="animate-fade-up opacity-0 delay-[250ms]"
+      >
+        <div className="border border-ink-600 rounded-lg bg-ink-800 p-6">
+          <SectionLabel>Integrasie</SectionLabel>
+          <h2 id="spotify-auth-heading" className="font-serif text-display-sm text-parchment-100">
+            Spotify OAuth helper
+          </h2>
+          <p className="font-body text-parchment-500 text-sm mt-2 max-w-2xl">
+            Kry of vernuwe jou Spotify refresh token met die ingeboude helper vloei.
+          </p>
+          <div className="mt-5">
+            <Link
+              href="/spotify-auth"
+              className="inline-flex items-center rounded-md border border-parchment-300 px-4 py-2 font-sans text-sm text-parchment-100 hover:bg-ink-700 transition-colors duration-200"
+            >
+              Open Spotify helper
+            </Link>
+          </div>
+        </div>
+      </section>
 
       <section aria-labelledby="composer-heading" className="animate-fade-up opacity-0 delay-300">
         <SectionLabel>Nuwe stuk</SectionLabel>
