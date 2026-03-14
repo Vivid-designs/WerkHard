@@ -1,19 +1,33 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
+
+const RESULT_COOKIE_NAME = "spotify_oauth_result";
 
 interface SpotifyAuthPageProps {
   searchParams: {
-    refresh_token?: string;
-    access_token?: string;
-    expires_in?: string;
     error?: string;
   };
 }
 
+interface SpotifyOAuthResult {
+  refresh_token: string;
+  access_token: string | null;
+  expires_in: number | null;
+}
+
 export default function SpotifyAuthPage({ searchParams }: SpotifyAuthPageProps) {
-  const refreshToken = searchParams.refresh_token;
-  const accessToken = searchParams.access_token;
-  const expiresIn = searchParams.expires_in;
   const error = searchParams.error;
+
+  let oauthResult: SpotifyOAuthResult | null = null;
+  const cookieValue = cookies().get(RESULT_COOKIE_NAME)?.value;
+
+  if (cookieValue) {
+    try {
+      oauthResult = JSON.parse(cookieValue) as SpotifyOAuthResult;
+    } catch {
+      oauthResult = null;
+    }
+  }
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
@@ -49,18 +63,18 @@ export default function SpotifyAuthPage({ searchParams }: SpotifyAuthPageProps) 
         </div>
       ) : null}
 
-      {refreshToken ? (
+      {oauthResult?.refresh_token ? (
         <section className="mt-8 rounded border border-green-200 bg-green-50 p-4">
           <h2 className="text-lg font-semibold text-green-900">Success 🎉</h2>
           <p className="mt-2 text-green-900">
             Save this value as <code>SPOTIFY_REFRESH_TOKEN</code> in your environment.
           </p>
           <pre className="mt-3 overflow-x-auto rounded bg-white p-3 text-sm text-green-900">
-            {refreshToken}
+            {oauthResult.refresh_token}
           </pre>
-          {accessToken ? (
+          {oauthResult.access_token ? (
             <p className="mt-3 text-sm text-green-800">
-              Temporary access token received (expires in {expiresIn ?? "unknown"} seconds).
+              Temporary access token received (expires in {oauthResult.expires_in ?? "unknown"} seconds).
             </p>
           ) : null}
         </section>
