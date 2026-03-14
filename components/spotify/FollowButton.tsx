@@ -1,6 +1,7 @@
 export default function FollowButton() {
   const profileUrl =
-    process.env.NEXT_PUBLIC_SPOTIFY_PROFILE_URL ?? "https://open.spotify.com";
+    process.env.NEXT_PUBLIC_SPOTIFY_PROFILE_URL ??
+    "https://open.spotify.com/user/wc92pr7gi6v1ilg2w04t7qq1z?si=878ed8ecba764b38";
 
   return (
     <a
