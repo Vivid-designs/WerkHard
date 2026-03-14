@@ -11,7 +11,7 @@ export default function SpotifyCallbackPage({ searchParams }: SpotifyCallbackPag
   const error = searchParams?.error;
 
   const localRedirectUri = "http://127.0.0.1:3000/spotify/callback";
-  const productionRedirectUri = "https://your-domain.com/spotify/callback";
+  const productionRedirectUri = "https://spencesa.co.za/spotify/callback";
 
   return (
     <main className="container-narrow section-spacing">

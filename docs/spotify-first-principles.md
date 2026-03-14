@@ -50,6 +50,7 @@ In Spotify Developer Dashboard:
 2. Copy your **Client ID** and **Client Secret**.
 3. Add at least one Redirect URI for one-time authorization token generation.
    - Example local URI: `http://127.0.0.1:3000/spotify/callback`
+   - Example production URI: `https://spencesa.co.za/spotify/callback`
 4. Save settings.
 
 > Redirect URI must exactly match what you use in your authorization request.
