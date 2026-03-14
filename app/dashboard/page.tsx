@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import UserPreview from "@/components/admin/UserPreview";
 import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardPage() {
@@ -25,17 +26,19 @@ export default function DashboardPage() {
           Dashboard
         </h1>
         <p className="mt-4 font-body text-base leading-relaxed text-parchment-300">
-          Welcome back{user?.email ? `, ${user.email}` : ""}. This is your private
-          dashboard shell.
+          Welcome back{user?.email ? `, ${user.email}` : ""}. This is your private dashboard shell.
         </p>
 
         <div className="mt-10 rounded-md border border-ink-600 bg-ink-900/70 p-6">
           <h2 className="font-serif text-xl text-parchment-100">Post management</h2>
           <p className="mt-2 font-body text-sm text-parchment-400">
-            Placeholder for future content tools (create, edit, publish, and archive
-            posts).
+            Placeholder for future content tools (create, edit, publish, and archive posts).
           </p>
         </div>
+
+        <section className="mt-10 animate-fade-up opacity-0 delay-500">
+          <UserPreview />
+        </section>
 
         <div className="mt-10">
           <button
