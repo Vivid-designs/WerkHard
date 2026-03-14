@@ -49,10 +49,12 @@ In Spotify Developer Dashboard:
 1. Create (or open) your app.
 2. Copy your **Client ID** and **Client Secret**.
 3. Add at least one Redirect URI for one-time authorization token generation.
-   - Example local URI: `http://127.0.0.1:5173/callback`
+   - Example local URI: `http://127.0.0.1:3000/spotify/callback`
 4. Save settings.
 
 > Redirect URI must exactly match what you use in your authorization request.
+>
+> Spotify security requirements: use HTTPS for non-loopback redirect URIs. For local development, use an explicit loopback address (`127.0.0.1` or `[::1]`) instead of `localhost`.
 
 ---
 
