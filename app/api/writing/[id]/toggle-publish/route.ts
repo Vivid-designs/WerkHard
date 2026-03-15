@@ -6,7 +6,7 @@ import { getWritingById, togglePublished } from "@/lib/writing-service";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(request);
   if (!admin) return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
 
   const { published } = (await request.json()) as { published: boolean };

@@ -1,6 +1,17 @@
 import { cookies } from "next/headers";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
+function getAccessTokenFromAuthorizationHeader(request?: Request): string | null {
+  if (!request) return null;
+
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader) return null;
+
+  const [scheme, token] = authHeader.split(" ");
+  if (scheme?.toLowerCase() !== "bearer" || !token) return null;
+
+  return token.trim() || null;
+}
 export interface UserProfile {
   id: string;
   email: string;
@@ -57,8 +68,12 @@ function getAccessTokenFromSupabaseCookie(): string | null {
   return tryParseCookieToken(authCookie.value);
 }
 
-export async function requireAdminUser(): Promise<{ userId: string } | null> {
-  const accessToken = getAccessTokenFromSupabaseCookie();
+function getAccessToken(request?: Request): string | null {
+  return getAccessTokenFromAuthorizationHeader(request) ?? getAccessTokenFromSupabaseCookie();
+}
+
+export async function requireAdminUser(request?: Request): Promise<{ userId: string } | null> {
+  const accessToken = getAccessToken(request);
 
   if (!accessToken) {
     return null;

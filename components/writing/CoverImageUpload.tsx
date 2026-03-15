@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 
 interface CoverImageUploadProps {
   value: string;
@@ -9,6 +10,7 @@ interface CoverImageUploadProps {
 }
 
 export default function CoverImageUpload({ value, onChange }: CoverImageUploadProps) {
+  const { session } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -21,7 +23,12 @@ export default function CoverImageUpload({ value, onChange }: CoverImageUploadPr
     fd.append("file", file);
 
     try {
-      const res = await fetch("/api/upload/writing-image", { method: "POST", body: fd });
+      const token = session?.access_token;
+      const res = await fetch("/api/upload/writing-image", {
+        method: "POST",
+        body: fd,
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error ?? "Oplaai het misluk.");

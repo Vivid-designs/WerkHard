@@ -6,7 +6,7 @@ import { getWritingById, updateWriting, deleteWriting, type WritingInput } from 
 export const runtime = "nodejs";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(_req);
   if (!admin) return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
 
   const piece = await getWritingById(params.id);
@@ -16,7 +16,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(request);
   if (!admin) return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
 
   const body = (await request.json()) as Partial<WritingInput>;
@@ -44,7 +44,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(_req);
   if (!admin) return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
 
   try {

@@ -4,25 +4,40 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import type { WritingPiece } from "@/lib/writing-service";
 import { formatDateShort } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 export default function WritingManager() {
+  const { session } = useAuth();
   const [pieces, setPieces] = useState<WritingPiece[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [confirming, setConfirming] = useState<string | null>(null);
 
+
+
+  function getAuthHeaders() {
+    const headers: Record<string, string> = {};
+    const token = session?.access_token;
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return headers;
+  }
+
   const load = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
-      const res = await fetch("/api/writing");
+      const res = await fetch("/api/writing", { headers: getAuthHeaders() });
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error ?? "Kon nie laai nie.");
+      }
       setPieces(data.pieces ?? []);
-    } catch {
-      setError("Kon nie laai nie.");
+    } catch (e: any) {
+      setError(e.message ?? "Kon nie laai nie.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [session?.access_token]);
 
   useEffect(() => {
     load();
@@ -31,14 +46,14 @@ export default function WritingManager() {
   async function handleToggle(piece: WritingPiece) {
     const res = await fetch(`/api/writing/${piece.id}/toggle-publish`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
       body: JSON.stringify({ published: !piece.published }),
     });
     if (res.ok) load();
   }
 
   async function handleDelete(id: string) {
-    const res = await fetch(`/api/writing/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/writing/${id}`, { method: "DELETE", headers: getAuthHeaders() });
     if (res.ok) load();
   }
 

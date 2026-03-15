@@ -10,8 +10,8 @@ import {
 
 export const runtime = "nodejs";
 
-export async function GET() {
-  const admin = await requireAdminUser();
+export async function GET(request: NextRequest) {
+  const admin = await requireAdminUser(request);
   if (!admin) return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
 
   const [pieces, categories] = await Promise.all([getAllWritingAdmin(), getAllCategories()]);
@@ -20,7 +20,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(request);
   if (!admin) return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
 
   try {
