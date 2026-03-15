@@ -21,6 +21,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
   const body = (await request.json()) as Partial<WritingInput>;
 
+  if (!body || Object.keys(body).length === 0) {
+    return NextResponse.json({ error: "Geen velde ontvang om te stoor nie." }, { status: 400 });
+  }
+
   try {
     const existing = await getWritingById(params.id);
     const piece = await updateWriting(params.id, body);
@@ -34,6 +38,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     return NextResponse.json({ piece });
   } catch (e: any) {
+    console.error("[api/writing/:id] update failed", e);
     return NextResponse.json({ error: e.message }, { status: 400 });
   }
 }
@@ -54,6 +59,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
 
     return NextResponse.json({ success: true });
   } catch (e: any) {
+    console.error("[api/writing/:id] delete failed", e);
     return NextResponse.json({ error: e.message }, { status: 400 });
   }
 }
