@@ -11,6 +11,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
   const { published } = (await request.json()) as { published: boolean };
 
+  if (typeof published !== "boolean") {
+    return NextResponse.json({ error: "Ongeldige publiseer status." }, { status: 400 });
+  }
+
   try {
     const piece = await getWritingById(params.id);
     await togglePublished(params.id, published);
@@ -23,6 +27,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     return NextResponse.json({ success: true });
   } catch (e: any) {
+    console.error("[api/writing/:id/toggle-publish] failed", e);
     return NextResponse.json({ error: e.message }, { status: 400 });
   }
 }

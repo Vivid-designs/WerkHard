@@ -25,6 +25,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as WritingInput;
+    if (!body?.title || !body?.slug) {
+      return NextResponse.json({ error: "Titel en slug is verpligtend." }, { status: 400 });
+    }
+
     const piece = await createWriting({ ...body, author_id: admin.userId });
 
     // Ensure fresh public/admin data after creation.
@@ -34,6 +38,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ piece }, { status: 201 });
   } catch (e: any) {
+    console.error("[api/writing] create failed", e);
     return NextResponse.json({ error: e.message }, { status: 400 });
   }
 }
