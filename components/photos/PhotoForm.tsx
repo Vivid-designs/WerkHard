@@ -151,6 +151,13 @@ export default function PhotoForm({ initial, mode }: PhotoFormProps) {
     );
   }
 
+  function getAuthHeaders() {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    const token = session?.access_token;
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return headers;
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -189,7 +196,7 @@ export default function PhotoForm({ initial, mode }: PhotoFormProps) {
 
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
 
