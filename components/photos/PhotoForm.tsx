@@ -4,6 +4,7 @@ import { useRef, useState, type DragEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { DisplayType, PeopleTag, PhotoEntry } from "@/lib/photo-service";
 import PeopleTagInput from "./PeopleTagInput";
+import { useAuth } from "@/context/AuthContext";
 
 interface ImageDraft {
   url: string;
@@ -38,6 +39,7 @@ function slugify(input: string) {
 
 export default function PhotoForm({ initial, mode }: PhotoFormProps) {
   const router = useRouter();
+  const { session } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState(initial?.title ?? "");
@@ -74,9 +76,11 @@ export default function PhotoForm({ initial, mode }: PhotoFormProps) {
     const formData = new FormData();
     formData.append("file", file);
 
+    const token = session?.access_token;
     const response = await fetch("/api/upload/photo-image", {
       method: "POST",
       body: formData,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
 
     const data = await response.json();
