@@ -5,7 +5,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-admin";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(request);
   if (!admin) return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
 
   const formData = await request.formData();

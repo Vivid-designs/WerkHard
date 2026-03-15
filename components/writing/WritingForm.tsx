@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { WritingPiece, Category } from "@/lib/writing-service";
 import CategorySelector from "./CategorySelector";
 import CoverImageUpload from "./CoverImageUpload";
+import { useAuth } from "@/context/AuthContext";
 
 interface WritingFormProps {
   initial?: WritingPiece;
@@ -33,6 +34,7 @@ function slugify(str: string): string {
 
 export default function WritingForm({ initial, categories, mode }: WritingFormProps) {
   const router = useRouter();
+  const { session } = useAuth();
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [subtitle, setSubtitle] = useState(initial?.subtitle ?? "");
@@ -53,6 +55,15 @@ export default function WritingForm({ initial, categories, mode }: WritingFormPr
       setSlug(slugify(title));
     }
   }, [title, slugManual, mode]);
+
+
+
+  function getAuthHeaders() {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    const token = session?.access_token;
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return headers;
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -85,7 +96,7 @@ export default function WritingForm({ initial, categories, mode }: WritingFormPr
       if (mode === "create") {
         const res = await fetch("/api/writing", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: getAuthHeaders(),
           body: JSON.stringify(payload),
         });
         if (!res.ok) {
@@ -95,7 +106,7 @@ export default function WritingForm({ initial, categories, mode }: WritingFormPr
       } else {
         const res = await fetch(`/api/writing/${initial?.id}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: getAuthHeaders(),
           body: JSON.stringify(payload),
         });
         if (!res.ok) {
