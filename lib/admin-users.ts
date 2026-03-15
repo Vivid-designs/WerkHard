@@ -68,8 +68,37 @@ function getAccessTokenFromSupabaseCookie(): string | null {
   return tryParseCookieToken(authCookie.value);
 }
 
+function getAccessTokenFromRequestCookies(request?: Request): string | null {
+  if (!request) return null;
+
+  const cookieHeader = request.headers.get("cookie");
+  if (!cookieHeader) return null;
+
+  const cookieParts = cookieHeader.split(";");
+
+  for (const cookiePart of cookieParts) {
+    const [nameRaw, ...valueParts] = cookiePart.trim().split("=");
+    const cookieName = nameRaw?.trim() ?? "";
+    if (!cookieName.startsWith("sb-") || !cookieName.endsWith("-auth-token")) {
+      continue;
+    }
+
+    const cookieValue = valueParts.join("=");
+    if (!cookieValue) continue;
+
+    const token = tryParseCookieToken(cookieValue);
+    if (token) return token;
+  }
+
+  return null;
+}
+
 function getAccessToken(request?: Request): string | null {
-  return getAccessTokenFromAuthorizationHeader(request) ?? getAccessTokenFromSupabaseCookie();
+  return (
+    getAccessTokenFromAuthorizationHeader(request) ??
+    getAccessTokenFromRequestCookies(request) ??
+    getAccessTokenFromSupabaseCookie()
+  );
 }
 
 export async function requireAdminUser(request?: Request): Promise<{ userId: string } | null> {
