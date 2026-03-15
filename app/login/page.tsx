@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
@@ -43,7 +44,24 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-ink-900 flex items-center justify-center px-6">
+    <div className="relative min-h-screen bg-ink-900 flex items-center justify-center px-6">
+      <Link
+        href="/"
+        aria-label="Terug na tuisblad"
+        className={[
+          "absolute left-6 top-6 inline-flex items-center gap-2",
+          "font-sans text-xs tracking-wide text-parchment-500",
+          "transition-all duration-200",
+          "hover:text-parchment-200 hover:-translate-x-0.5",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-parchment-400/35 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-900 rounded-md px-2 py-1",
+        ].join(" ")}
+      >
+        <span aria-hidden="true" className="text-base leading-none">
+          ←
+        </span>
+        <span className="uppercase tracking-[0.18em]">Tuis</span>
+      </Link>
+
       <div className="w-full max-w-sm animate-fade-up opacity-0">
         <div className="text-center mb-10">
           <p className="font-sans text-2xs tracking-widest uppercase text-parchment-600 mb-4">
@@ -101,9 +119,11 @@ export default function LoginPage() {
             type="submit"
             disabled={loading || isLoading}
             className={[
-              "mt-2 w-full font-sans text-sm tracking-wide",
-              "bg-parchment-200 text-ink-900 border border-parchment-200",
-              "hover:bg-parchment-100 rounded-md py-3",
+              "mt-3 w-full font-sans text-sm tracking-[0.08em] uppercase",
+              "bg-parchment-100 text-ink-900 border border-parchment-300",
+              "shadow-[0_0_0_1px_rgba(238,227,198,0.08),0_10px_28px_rgba(10,10,13,0.4)]",
+              "hover:bg-parchment-200 hover:border-parchment-200 hover:shadow-[0_0_0_1px_rgba(238,227,198,0.14),0_14px_32px_rgba(10,10,13,0.5)]",
+              "rounded-md py-3.5",
               "transition-all duration-200",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-parchment-400/40",
               loading || isLoading ? "opacity-60 cursor-not-allowed" : "",
