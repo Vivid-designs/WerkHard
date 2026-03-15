@@ -50,6 +50,17 @@ export default function AdminHeader() {
             >
               Nuwe stuk
             </Link>
+            <Link
+              href="/dashboard/fotos"
+              className={[
+                "font-sans text-2xs tracking-widest uppercase",
+                "text-parchment-500 hover:text-parchment-200",
+                "border border-ink-500 hover:border-ink-400",
+                "px-3 py-1.5 rounded transition-all duration-200",
+              ].join(" ")}
+            >
+              Fotos
+            </Link>
           </nav>
 
           {user?.email ? (

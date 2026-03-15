@@ -9,6 +9,7 @@ const publicNavItems = [
   { label: "Home", href: "/" },
   { label: "WerkHard", href: "/werkhard" },
   { label: "Skryf", href: "/skryf" },
+  { label: "Fotos", href: "/fotos" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
