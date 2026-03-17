@@ -19,6 +19,7 @@ interface SignInCredentials {
 interface AuthContextValue {
   user: User | null;
   session: Session | null;
+  isAuthenticated: boolean;
   isAdmin: boolean;
   isLoading: boolean;
   signInWithPassword: (credentials: SignInCredentials) => Promise<string | null>;
@@ -28,6 +29,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   session: null,
+  isAuthenticated: false,
   isAdmin: false,
   isLoading: true,
   signInWithPassword: async () => "Supabase is not configured.",
@@ -92,6 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         session,
+        isAuthenticated: user !== null,
         isAdmin: isAdminUser(user),
         isLoading,
         signInWithPassword,

@@ -10,7 +10,7 @@ export default function AdminHeader() {
 
   const handleSignOut = async () => {
     await signOut();
-    router.replace("/login");
+    router.replace("/");
   };
 
   return (
@@ -27,6 +27,42 @@ export default function AdminHeader() {
         </Link>
 
         <div className="flex items-center gap-5">
+          <nav className="hidden md:flex items-center gap-2" aria-label="Admin navigation">
+            <Link
+              href="/dashboard/writing"
+              className={[
+                "font-sans text-2xs tracking-widest uppercase",
+                "text-parchment-500 hover:text-parchment-200",
+                "border border-ink-500 hover:border-ink-400",
+                "px-3 py-1.5 rounded transition-all duration-200",
+              ].join(" ")}
+            >
+              Skryfwerk
+            </Link>
+            <Link
+              href="/dashboard/writing/new"
+              className={[
+                "font-sans text-2xs tracking-widest uppercase",
+                "text-parchment-500 hover:text-parchment-200",
+                "border border-ink-500 hover:border-ink-400",
+                "px-3 py-1.5 rounded transition-all duration-200",
+              ].join(" ")}
+            >
+              Nuwe stuk
+            </Link>
+            <Link
+              href="/dashboard/fotos"
+              className={[
+                "font-sans text-2xs tracking-widest uppercase",
+                "text-parchment-500 hover:text-parchment-200",
+                "border border-ink-500 hover:border-ink-400",
+                "px-3 py-1.5 rounded transition-all duration-200",
+              ].join(" ")}
+            >
+              Fotos
+            </Link>
+          </nav>
+
           {user?.email ? (
             <span className="hidden sm:block font-sans text-xs text-parchment-600 truncate max-w-[180px]">
               {user.email}

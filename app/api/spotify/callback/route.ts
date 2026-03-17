@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
-const RESULT_COOKIE_NAME = "spotify_oauth_result";
 
 export const dynamic = "force-dynamic";
+
+const SPOTIFY_AUTH_RESULT_COOKIE = "spotify_auth_result";
+
+interface SpotifyAuthResultCookie {
+  refreshToken: string;
+  expiresIn?: number;
+  accessTokenReceived: boolean;
+}
+
+function toCookiePayload(payload: SpotifyAuthResultCookie) {
+  return Buffer.from(JSON.stringify(payload)).toString("base64url");
+}
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -12,25 +23,17 @@ export async function GET(request: NextRequest) {
   const error = url.searchParams.get("error");
 
   if (error) {
-    const response = NextResponse.redirect(
-      new URL(`/spotify-auth?error=${encodeURIComponent(error)}`, request.url),
-    );
-    response.cookies.delete("spotify_auth_state");
-    return response;
+    return NextResponse.redirect(new URL(`/spotify-auth?error=${encodeURIComponent(error)}`, request.url));
   }
 
   const storedState = request.cookies.get("spotify_auth_state")?.value;
 
   if (!state || !storedState || state !== storedState) {
-    const response = NextResponse.redirect(new URL("/spotify-auth?error=state_mismatch", request.url));
-    response.cookies.delete("spotify_auth_state");
-    return response;
+    return NextResponse.redirect(new URL("/spotify-auth?error=state_mismatch", request.url));
   }
 
   if (!code) {
-    const response = NextResponse.redirect(new URL("/spotify-auth?error=missing_code", request.url));
-    response.cookies.delete("spotify_auth_state");
-    return response;
+    return NextResponse.redirect(new URL("/spotify-auth?error=missing_code", request.url));
   }
 
   const clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -38,9 +41,7 @@ export async function GET(request: NextRequest) {
   const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
 
   if (!clientId || !clientSecret || !redirectUri) {
-    const response = NextResponse.redirect(new URL("/spotify-auth?error=missing_spotify_env", request.url));
-    response.cookies.delete("spotify_auth_state");
-    return response;
+    return NextResponse.redirect(new URL("/spotify-auth?error=missing_spotify_env", request.url));
   }
 
   const basic = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
@@ -63,30 +64,26 @@ export async function GET(request: NextRequest) {
 
   if (!tokenRes.ok || !data.refresh_token) {
     const tokenError = data.error_description || data.error || `token_request_failed_${tokenRes.status}`;
-    const response = NextResponse.redirect(
+    return NextResponse.redirect(
       new URL(`/spotify-auth?error=${encodeURIComponent(tokenError)}`, request.url),
     );
-    response.cookies.delete("spotify_auth_state");
-    return response;
   }
 
   const response = NextResponse.redirect(new URL("/spotify-auth", request.url));
-  response.cookies.set(
-    RESULT_COOKIE_NAME,
-    JSON.stringify({
-      refresh_token: data.refresh_token,
-      access_token: data.access_token ?? null,
-      expires_in: data.expires_in ?? null,
-    }),
-    {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 5,
-      path: "/spotify-auth",
-    },
-  );
   response.cookies.delete("spotify_auth_state");
+  response.cookies.set({
+    name: SPOTIFY_AUTH_RESULT_COOKIE,
+    value: toCookiePayload({
+      refreshToken: data.refresh_token as string,
+      expiresIn: typeof data.expires_in === "number" ? data.expires_in : undefined,
+      accessTokenReceived: Boolean(data.access_token),
+    }),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 5,
+    path: "/spotify-auth",
+  });
 
   return response;
 }

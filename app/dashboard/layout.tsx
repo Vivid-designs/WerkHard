@@ -6,14 +6,14 @@ import AdminHeader from "@/components/layout/AdminHeader";
 import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  const { isAdmin, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAdmin) {
+    if (!isLoading && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAdmin, isLoading, router]);
+  }, [isAuthenticated, isLoading, router]);
 
   if (isLoading) {
     return (
@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  if (!isAdmin) return null;
+  if (!isAuthenticated) return null;
 
   return (
     <div className="min-h-screen flex flex-col bg-ink-900">

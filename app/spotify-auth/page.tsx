@@ -1,7 +1,13 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 
-const RESULT_COOKIE_NAME = "spotify_oauth_result";
+const SPOTIFY_AUTH_RESULT_COOKIE = "spotify_auth_result";
+
+interface SpotifyAuthResultCookie {
+  refreshToken: string;
+  expiresIn?: number;
+  accessTokenReceived: boolean;
+}
 
 interface SpotifyAuthPageProps {
   searchParams: {
@@ -9,25 +15,29 @@ interface SpotifyAuthPageProps {
   };
 }
 
-interface SpotifyOAuthResult {
-  refresh_token: string;
-  access_token: string | null;
-  expires_in: number | null;
+function fromCookiePayload(value: string): SpotifyAuthResultCookie | null {
+  try {
+    const parsed = JSON.parse(Buffer.from(value, "base64url").toString("utf8"));
+
+    if (!parsed || typeof parsed !== "object" || typeof parsed.refreshToken !== "string") {
+      return null;
+    }
+
+    return {
+      refreshToken: parsed.refreshToken,
+      expiresIn: typeof parsed.expiresIn === "number" ? parsed.expiresIn : undefined,
+      accessTokenReceived: Boolean(parsed.accessTokenReceived),
+    };
+  } catch {
+    return null;
+  }
 }
 
-export default function SpotifyAuthPage({ searchParams }: SpotifyAuthPageProps) {
+export default async function SpotifyAuthPage({ searchParams }: SpotifyAuthPageProps) {
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get(SPOTIFY_AUTH_RESULT_COOKIE)?.value;
+  const authResult = authCookie ? fromCookiePayload(authCookie) : null;
   const error = searchParams.error;
-
-  let oauthResult: SpotifyOAuthResult | null = null;
-  const cookieValue = cookies().get(RESULT_COOKIE_NAME)?.value;
-
-  if (cookieValue) {
-    try {
-      oauthResult = JSON.parse(cookieValue) as SpotifyOAuthResult;
-    } catch {
-      oauthResult = null;
-    }
-  }
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
@@ -63,18 +73,18 @@ export default function SpotifyAuthPage({ searchParams }: SpotifyAuthPageProps) 
         </div>
       ) : null}
 
-      {oauthResult?.refresh_token ? (
+      {authResult ? (
         <section className="mt-8 rounded border border-green-200 bg-green-50 p-4">
           <h2 className="text-lg font-semibold text-green-900">Success 🎉</h2>
           <p className="mt-2 text-green-900">
             Save this value as <code>SPOTIFY_REFRESH_TOKEN</code> in your environment.
           </p>
           <pre className="mt-3 overflow-x-auto rounded bg-white p-3 text-sm text-green-900">
-            {oauthResult.refresh_token}
+            {authResult.refreshToken}
           </pre>
-          {oauthResult.access_token ? (
+          {authResult.accessTokenReceived ? (
             <p className="mt-3 text-sm text-green-800">
-              Temporary access token received (expires in {oauthResult.expires_in ?? "unknown"} seconds).
+              Temporary access token received (expires in {authResult.expiresIn ?? "unknown"} seconds).
             </p>
           ) : null}
         </section>

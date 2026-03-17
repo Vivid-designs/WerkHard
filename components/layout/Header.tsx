@@ -9,6 +9,7 @@ const publicNavItems = [
   { label: "Home", href: "/" },
   { label: "WerkHard", href: "/werkhard" },
   { label: "Skryf", href: "/skryf" },
+  { label: "Fotos", href: "/fotos" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -25,7 +26,7 @@ export default function Header() {
   const handleSignOut = async () => {
     await signOut();
     setMenuOpen(false);
-    router.replace("/login");
+    router.replace("/");
   };
 
   return (
