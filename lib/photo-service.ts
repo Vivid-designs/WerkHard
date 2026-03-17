@@ -132,24 +132,12 @@ function decodePhotoSlug(slug: string): string {
 }
 
 export async function getPhotoEntryBySlug(slug: string): Promise<PhotoEntry | null> {
-  const decodedSlug = decodePhotoSlug(slug);
-  const plusDecodedSlug = decodedSlug.replace(/\+/g, " ");
+  const normalizedSlug = normalizePhotoSlug(slug);
 
-  const slugCandidates = Array.from(
-    new Set([
-      slug,
-      decodedSlug,
-      plusDecodedSlug,
-      normalizePhotoSlug(slug),
-      normalizePhotoSlug(decodedSlug),
-      normalizePhotoSlug(plusDecodedSlug),
-    ].filter(Boolean)),
-  );
-
-  const { data } = await getSupabaseAdmin()
+  const { data, error } = await getSupabaseAdmin()
     .from("photo_entries")
     .select("*")
-    .in("slug", slugCandidates)
+    .in("slug", Array.from(new Set([slug, normalizedSlug])))
     .eq("published", true)
     .limit(1)
     .maybeSingle();
