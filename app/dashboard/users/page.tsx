@@ -33,12 +33,30 @@ export default function UsersPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/admin/users");
-      if (!response.ok) throw new Error("Kon nie laai nie.");
-      const data = await response.json();
-      setUsers(data.users ?? []);
+      const response = await fetch("/api/admin/users", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = (await response.json().catch(() => ({}))) as {
+        users?: UserProfile[];
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Kon nie gebruikers laai nie.");
+      }
+
+      const nextUsers = Array.isArray(data.users) ? data.users : [];
+      setUsers(nextUsers);
+
+      if (!Array.isArray(data.users)) {
+        console.error("[dashboard/users] Unexpected users payload", data);
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Kon nie laai nie.");
+      const message = err instanceof Error ? err.message : "Kon nie gebruikers laai nie.";
+      setUsers([]);
+      setError(message);
+      console.error("[dashboard/users] Failed to load users", err);
     } finally {
       setLoading(false);
     }

@@ -8,7 +8,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(request);
   if (!admin) {
     return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
   }
