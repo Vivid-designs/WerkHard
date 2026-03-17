@@ -4,36 +4,72 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import type { PhotoEntry } from "@/lib/photo-service";
 import { formatDateShort } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PhotoManager() {
+  const { session } = useAuth();
   const [entries, setEntries] = useState<PhotoEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [error, setError] = useState("");
+
+  const authHeaders = useCallback(() => {
+    const token = session?.access_token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }, [session?.access_token]);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const response = await fetch("/api/photos");
-    const data = await response.json();
+    setError("");
+
+    const response = await fetch("/api/photos", { headers: authHeaders() });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setEntries([]);
+      setError(data?.error ?? "Kon nie fotos laai nie.");
+      setLoading(false);
+      return;
+    }
+
     setEntries(data.entries ?? []);
     setLoading(false);
-  }, []);
+  }, [authHeaders]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
   async function handleToggle(entry: PhotoEntry) {
-    await fetch(`/api/photos/${entry.id}/toggle-publish`, {
+    setError("");
+    const response = await fetch(`/api/photos/${entry.id}/toggle-publish`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders() },
       body: JSON.stringify({ published: !entry.published }),
     });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      setError(data?.error ?? "Kon nie publikasie status verander nie.");
+      return;
+    }
 
     void load();
   }
 
   async function handleDelete(id: string) {
-    await fetch(`/api/photos/${id}`, { method: "DELETE" });
+    setError("");
+    const response = await fetch(`/api/photos/${id}`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      setError(data?.error ?? "Kon nie foto verwyder nie.");
+      return;
+    }
+
     setConfirming(null);
     void load();
   }
@@ -74,6 +110,12 @@ export default function PhotoManager() {
           </Link>
         </div>
       </div>
+
+      {error ? (
+        <div className="py-4 px-5 border border-peach/30 bg-peach/10 rounded-lg">
+          <p className="font-sans text-xs text-peach">{error}</p>
+        </div>
+      ) : null}
 
       {entries.length === 0 ? (
         <div className="py-16 text-center border border-ink-600 rounded-lg bg-ink-800">
