@@ -123,6 +123,14 @@ export async function getPublishedPhotoEntries(): Promise<PhotoEntry[]> {
   return attachRelated(data ?? []);
 }
 
+function decodePhotoSlug(slug: string): string {
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
 export async function getPhotoEntryBySlug(slug: string): Promise<PhotoEntry | null> {
   const normalizedSlug = normalizePhotoSlug(slug);
 
@@ -131,11 +139,32 @@ export async function getPhotoEntryBySlug(slug: string): Promise<PhotoEntry | nu
     .select("*")
     .in("slug", Array.from(new Set([slug, normalizedSlug])))
     .eq("published", true)
-    .single();
+    .limit(1)
+    .maybeSingle();
 
-  if (error || !data) return null;
+  if (directMatchError) return null;
 
-  const [entry] = await attachRelated([data]);
+  if (data) {
+    const [entry] = await attachRelated([data]);
+    return entry ?? null;
+  }
+
+  const { data: publishedEntries, error: publishedEntriesError } = await getSupabaseAdmin()
+    .from("photo_entries")
+    .select("*")
+    .eq("published", true);
+  if (publishedEntriesError || !publishedEntries) return null;
+
+  const normalizedCandidates = new Set(slugCandidates.map((candidate) => normalizePhotoSlug(candidate)).filter(Boolean));
+
+  const matched = publishedEntries.find((entry) => {
+    if (slugCandidates.includes(entry.slug)) return true;
+    return normalizedCandidates.has(normalizePhotoSlug(entry.slug));
+  });
+
+  if (!matched) return null;
+
+  const [entry] = await attachRelated([matched]);
   return entry ?? null;
 }
 
