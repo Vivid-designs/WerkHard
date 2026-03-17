@@ -46,6 +46,18 @@ export interface PhotoInput {
   people_tags?: Omit<PeopleTag, "id">[];
 }
 
+export function normalizePhotoSlug(slug: string): string {
+  return slug
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\/[^/]+/g, "")
+    .replace(/^\/+|\/+$/g, "")
+    .replace(/^fotos\//, "")
+    .replace(/[\s/]+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-{2,}/g, "-");
+}
+
 async function attachRelated(entries: Array<Record<string, any>>): Promise<PhotoEntry[]> {
   if (!entries.length) return [];
 
@@ -112,10 +124,12 @@ export async function getPublishedPhotoEntries(): Promise<PhotoEntry[]> {
 }
 
 export async function getPhotoEntryBySlug(slug: string): Promise<PhotoEntry | null> {
+  const normalizedSlug = normalizePhotoSlug(slug);
+
   const { data, error } = await getSupabaseAdmin()
     .from("photo_entries")
     .select("*")
-    .eq("slug", slug)
+    .in("slug", Array.from(new Set([slug, normalizedSlug])))
     .eq("published", true)
     .single();
 
@@ -183,7 +197,7 @@ export async function createPhotoEntry(input: PhotoInput): Promise<PhotoEntry> {
     .from("photo_entries")
     .insert({
       title: fields.title ?? null,
-      slug: fields.slug,
+      slug: normalizePhotoSlug(fields.slug),
       caption: fields.caption ?? null,
       display_type: fields.display_type,
       published: fields.published ?? false,
@@ -212,7 +226,7 @@ export async function updatePhotoEntry(id: string, input: Partial<PhotoInput>): 
   const payload: Record<string, any> = {};
 
   if (fields.title !== undefined) payload.title = fields.title;
-  if (fields.slug !== undefined) payload.slug = fields.slug;
+  if (fields.slug !== undefined) payload.slug = normalizePhotoSlug(fields.slug);
   if (fields.caption !== undefined) payload.caption = fields.caption;
   if (fields.display_type !== undefined) payload.display_type = fields.display_type;
   if (fields.featured !== undefined) payload.featured = fields.featured;
