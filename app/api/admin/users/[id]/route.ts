@@ -8,7 +8,7 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(request);
   if (!admin) {
     return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
   }
@@ -64,10 +64,10 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const admin = await requireAdminUser();
+  const admin = await requireAdminUser(request);
   if (!admin) {
     return NextResponse.json({ error: "Ongemagtig." }, { status: 401 });
   }
