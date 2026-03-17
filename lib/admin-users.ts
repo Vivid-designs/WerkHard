@@ -7,7 +7,7 @@ function getAccessTokenFromAuthorizationHeader(request?: Request): string | null
   const authHeader = request.headers.get("authorization");
   if (!authHeader) return null;
 
-  const [scheme, token] = authHeader.split(" ");
+  const [scheme, token] = authHeader.trim().split(/\s+/);
   if (scheme?.toLowerCase() !== "bearer" || !token) return null;
 
   return token.trim() || null;
@@ -103,8 +103,14 @@ function getAccessToken(request?: Request): string | null {
 
 export async function requireAdminUser(request?: Request): Promise<{ userId: string } | null> {
   const accessToken = getAccessToken(request);
+  const hasAuthorizationHeader = Boolean(request?.headers.get("authorization"));
+  const hasCookieHeader = Boolean(request?.headers.get("cookie"));
 
   if (!accessToken) {
+    console.error("[admin-users] Unauthorized request: no access token", {
+      hasAuthorizationHeader,
+      hasCookieHeader,
+    });
     return null;
   }
 
@@ -113,7 +119,14 @@ export async function requireAdminUser(request?: Request): Promise<{ userId: str
     error: userError,
   } = await getSupabaseAdmin().auth.getUser(accessToken);
 
-  if (userError || !user) return null;
+  if (userError || !user) {
+    console.error("[admin-users] Unauthorized request: invalid access token", {
+      hasAuthorizationHeader,
+      hasCookieHeader,
+      error: userError?.message,
+    });
+    return null;
+  }
 
   const { data: profile } = await getSupabaseAdmin()
     .from("profiles")
@@ -121,7 +134,14 @@ export async function requireAdminUser(request?: Request): Promise<{ userId: str
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_admin) return null;
+  if (!profile?.is_admin) {
+    console.error("[admin-users] Unauthorized request: user is not an admin", {
+      userId: user.id,
+      hasAuthorizationHeader,
+      hasCookieHeader,
+    });
+    return null;
+  }
 
   return { userId: user.id };
 }
