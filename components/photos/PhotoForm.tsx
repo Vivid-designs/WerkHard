@@ -187,14 +187,24 @@ export default function PhotoForm({ initial, mode }: PhotoFormProps) {
       const url = mode === "create" ? "/api/photos" : `/api/photos/${initial?.id}`;
       const method = mode === "create" ? "POST" : "PATCH";
 
+      const token = session?.access_token;
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify(payload),
       });
 
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
+        console.error("[PhotoForm] Save failed", {
+          mode,
+          status: response.status,
+          hasAccessToken: Boolean(token),
+          responseError: data?.error ?? null,
+        });
         setError(data?.error ?? `Fout ${response.status}`);
         setSaving(false);
         return;
@@ -203,6 +213,10 @@ export default function PhotoForm({ initial, mode }: PhotoFormProps) {
       router.push("/dashboard/fotos");
       router.refresh();
     } catch (submitError: any) {
+      console.error("[PhotoForm] Save request error", {
+        mode,
+        message: submitError?.message ?? "Unknown error",
+      });
       setError(submitError.message);
       setSaving(false);
     }
