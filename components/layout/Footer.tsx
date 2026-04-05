@@ -13,16 +13,16 @@ export default function Footer() {
               href="/"
               className="font-serif text-base text-parchment-100 hover:text-white transition-colors duration-200"
             >
-              The Commonplace
+              Spencesa
             </Link>
             <p className="mt-3 font-body text-sm text-parchment-500 leading-relaxed max-w-xs">
-              Essays and reflections on writing, reading, and the art of paying attention.
+              Gedagtes, projekte en lesse — van tegnologie tot persoonlike groei.
             </p>
           </div>
 
           <div>
             <h4 className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-4">
-              Navigate
+              Navigeer
             </h4>
             <ul className="flex flex-col gap-2.5">
               {footerNav.map((item) => (
@@ -40,7 +40,7 @@ export default function Footer() {
 
           <div>
             <h4 className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-4">
-              Find me elsewhere
+              Vind my elders
             </h4>
             <ul className="flex flex-col gap-2.5">
               {socialLinks.map((link) => (
@@ -62,10 +62,10 @@ export default function Footer() {
 
         <div className="mt-12 pt-6 border-t border-ink-700 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="font-sans text-xs text-parchment-600">
-            © {year} The Commonplace. All rights reserved.
+            © {year} Spencesa. Alle regte voorbehou.
           </p>
           <p className="font-sans text-xs text-parchment-600">
-            Written and maintained with care.
+            Geskryf en onderhou met sorg.
           </p>
         </div>
       </div>

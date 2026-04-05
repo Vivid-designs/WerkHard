@@ -15,27 +15,26 @@ export default function Hero() {
       <div className="container-narrow section-spacing">
         <div className="max-w-prose-wide mx-auto text-center">
           <p className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-8 animate-fade-in">
-            A personal journal
+            Persoonlike joernaal
           </p>
 
           <h1 className="font-serif text-display-lg text-parchment-100 mb-7 animate-fade-up opacity-0 delay-100">
-            Writing slowly,
+            Deel soveel as moontlik,
             <br />
-            <em className="text-rose">reading carefully.</em>
+            <em className="text-rose">en dink hardop.</em>
           </h1>
 
           <p className="font-body text-parchment-400 text-base md:text-lg leading-relaxed max-w-reading mx-auto mb-10 animate-fade-up opacity-0 delay-200">
-            This is where I think out loud — about books that won't leave me alone,
-            the craft of putting sentences together, places I keep returning to,
-            and the slow discipline of paying close attention.
+            Hierdie is my plek waar ek soveel as moontlik deel, en soms hardop dink
+            — oor tegnologie, dissipline, geloof, en die dinge wat my elke dag aanhou skuif.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14 animate-fade-up opacity-0 delay-300">
-            <Button as="link" href="/essays" size="lg" variant="primary">
-              Read the essays
+            <Button as="link" href="/skryf" size="lg" variant="primary">
+              Lees die essays
             </Button>
             <Button as="link" href="/about" size="lg" variant="secondary">
-              About this site
+              Oor hierdie webwerf
             </Button>
           </div>
 
@@ -44,9 +43,9 @@ export default function Hero() {
               &amp;
             </div>
             <blockquote className="font-serif italic text-parchment-500 text-sm md:text-base leading-relaxed">
-              "A writer only begins a book. A reader finishes it."
+              &ldquo;Dissipline is die brug tussen doelwitte en prestasie.&rdquo;
               <cite className="block not-italic font-sans text-2xs tracking-widest uppercase text-parchment-600 mt-3">
-                — Samuel Johnson
+                — Jim Rohn
               </cite>
             </blockquote>
           </div>

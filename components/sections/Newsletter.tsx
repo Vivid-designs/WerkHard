@@ -17,7 +17,7 @@ export default function Newsletter() {
     await new Promise((r) => setTimeout(r, 800));
 
     setStatus("success");
-    setMessage("You're on the list. Thank you.");
+    setMessage("Jy is op die lys. Dankie.");
     setEmail("");
   }
 
@@ -30,16 +30,16 @@ export default function Newsletter() {
           </div>
 
           <p className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-3">
-            Stay in touch
+            Bly in kontak
           </p>
           <h2
             id="newsletter-heading"
             className="font-serif text-display-sm text-parchment-100 mb-5"
           >
-            New essays, occasionally.
+            Nuwe essays, af en toe.
           </h2>
           <p className="font-body text-parchment-400 text-sm leading-relaxed mb-10 max-w-reading mx-auto">
-            No algorithm. No schedule. Just an email when something new is worth reading.
+            Volg my hier as jy af en toe &apos;n email van my af wil ontvang. Geen algoritme. Geen skedule.
           </p>
 
           {status === "success" ? (
@@ -49,14 +49,14 @@ export default function Newsletter() {
               onSubmit={handleSubmit}
               className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto"
             >
-              <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+              <label htmlFor="newsletter-email" className="sr-only">E-posadres</label>
               <input
                 id="newsletter-email"
                 type="email"
                 name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder="jou@epos.com"
                 required
                 autoComplete="email"
                 className={[
@@ -74,19 +74,19 @@ export default function Newsletter() {
                 disabled={status === "loading"}
                 className={status === "loading" ? "opacity-60 cursor-wait" : ""}
               >
-                {status === "loading" ? "Sending…" : "Subscribe"}
+                {status === "loading" ? "Stuur…" : "Teken in"}
               </Button>
             </form>
           )}
 
           {status === "error" && (
             <p className="mt-3 font-sans text-xs text-peach" role="alert">
-              {message || "Something went wrong. Please try again."}
+              {message || "Iets het fout gegaan. Probeer asseblief weer."}
             </p>
           )}
 
           <p className="mt-5 font-sans text-xs text-parchment-600">
-            No spam. Unsubscribe at any time.
+            Geen spam. Teken enige tyd af.
           </p>
         </div>
       </div>

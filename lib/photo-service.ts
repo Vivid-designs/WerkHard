@@ -142,7 +142,7 @@ export async function getPhotoEntryBySlug(slug: string): Promise<PhotoEntry | nu
     .limit(1)
     .maybeSingle();
 
-  if (directMatchError) return null;
+  if (error) return null;
 
   if (data) {
     const [entry] = await attachRelated([data]);
@@ -155,10 +155,11 @@ export async function getPhotoEntryBySlug(slug: string): Promise<PhotoEntry | nu
     .eq("published", true);
   if (publishedEntriesError || !publishedEntries) return null;
 
-  const normalizedCandidates = new Set(slugCandidates.map((candidate) => normalizePhotoSlug(candidate)).filter(Boolean));
+  const candidates = Array.from(new Set([slug, normalizedSlug]));
+  const normalizedCandidates = new Set(candidates.map((candidate) => normalizePhotoSlug(candidate)).filter(Boolean));
 
   const matched = publishedEntries.find((entry) => {
-    if (slugCandidates.includes(entry.slug)) return true;
+    if (candidates.includes(entry.slug)) return true;
     return normalizedCandidates.has(normalizePhotoSlug(entry.slug));
   });
 

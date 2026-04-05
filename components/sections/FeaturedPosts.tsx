@@ -13,20 +13,20 @@ export default function FeaturedPosts({ posts }: FeaturedPostsProps) {
         <header className="flex items-end justify-between mb-12">
           <div>
             <p className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-2">
-              Selected writing
+              Uitgesoekte skryfwerk
             </p>
             <h2
               id="featured-heading"
               className="font-serif text-display-md text-parchment-100"
             >
-              Recent essays
+              Onlangse essays
             </h2>
           </div>
           <Link
-            href="/essays"
+            href="/skryf"
             className="hidden sm:inline-flex font-sans text-xs tracking-wide text-parchment-500 hover:text-parchment-200 transition-colors duration-200 items-center gap-2"
           >
-            All essays <span aria-hidden="true" className="text-parchment-600">→</span>
+            Alle essays <span aria-hidden="true" className="text-parchment-600">→</span>
           </Link>
         </header>
 
@@ -38,10 +38,10 @@ export default function FeaturedPosts({ posts }: FeaturedPostsProps) {
 
         <div className="mt-10 flex justify-center sm:hidden">
           <Link
-            href="/essays"
+            href="/skryf"
             className="font-sans text-xs tracking-wide text-parchment-500 hover:text-parchment-200 transition-colors duration-200 underline underline-offset-4 decoration-parchment-600"
           >
-            Browse all essays →
+            Blaai deur alle essays →
           </Link>
         </div>
       </div>

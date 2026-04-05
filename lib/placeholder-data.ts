@@ -41,25 +41,26 @@ export const featuredPosts: Post[] = [
 ];
 
 export const navItems: NavItem[] = [
-  { label: "Essays", href: "/essays" },
-  { label: "Journal", href: "/journal" },
-  { label: "Reading", href: "/reading" },
-  { label: "About", href: "/about" },
+  { label: "WerkHard", href: "/werkhard" },
+  { label: "Skryf", href: "/skryf" },
+  { label: "Fotos", href: "/fotos" },
+  { label: "Oor My", href: "/about" },
 ];
 
 export const footerNav: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "Essays", href: "/essays" },
-  { label: "Journal", href: "/journal" },
-  { label: "Reading", href: "/reading" },
-  { label: "About", href: "/about" },
-  { label: "Archive", href: "/archive" },
+  { label: "Tuis", href: "/" },
+  { label: "WerkHard", href: "/werkhard" },
+  { label: "Skryf", href: "/skryf" },
+  { label: "Fotos", href: "/fotos" },
+  { label: "Oor My", href: "/about" },
+  { label: "Kontak", href: "/contact" },
 ];
 
 export const socialLinks: SocialLink[] = [
-  { label: "Twitter / X", href: "https://twitter.com" },
+  { label: "X (Twitter)", href: "https://x.com/Werk__Hard" },
+  { label: "Instagram", href: "https://instagram.com/spencesa" },
+  { label: "Spotify", href: "https://open.spotify.com" },
   { label: "Substack", href: "https://substack.com" },
-  { label: "Goodreads", href: "https://goodreads.com" },
 ];
 
 export const categoryColors: Record<string, string> = {

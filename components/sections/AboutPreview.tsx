@@ -21,29 +21,27 @@ export default function AboutPreview() {
 
           <div className="md:col-span-8 lg:col-span-9">
             <p className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-4">
-              The writer
+              Wie ek is
             </p>
             <h2
               id="about-heading"
               className="font-serif text-display-sm text-parchment-100 mb-6"
             >
-              Writing as a way of thinking.
+              Skrywer. Bouer. Denker.
             </h2>
             <div className="space-y-4 font-body text-parchment-400 text-base leading-relaxed mb-8 max-w-reading">
               <p>
-                I'm a writer and reader based somewhere with too many unread books and
-                not enough time. This site is an ongoing practice — a place to work
-                through ideas slowly, to trace the line between what I've read and
-                what I've thought.
+                Ek is nuuskierig oor hoe dinge werk — hoe idees vorm kry, hoe mense dink,
+                en hoe tegnologie die wêreld om ons verander. Hierdie webwerf is waar ek
+                deel wat ek doen en wat ek wil doen.
               </p>
               <p>
-                The name <em className="text-parchment-300">The Commonplace</em> comes
-                from the old tradition of keeping a commonplace book: a personal
-                anthology of passages, observations, and borrowed thoughts.
+                Van sagteware en ingenieurswerk tot kreatiewe projekte en persoonlike groei
+                — ek hou daarvan om konsepte in iets werkliks te verander.
               </p>
             </div>
             <Button as="link" href="/about" variant="secondary" size="md">
-              Read more about this site
+              Meer oor my
             </Button>
           </div>
         </div>
