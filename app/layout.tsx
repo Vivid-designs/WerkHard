@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import PublicLayoutWrapper from "@/components/layout/PublicLayoutWrapper";
 import { AuthProvider } from "@/context/AuthContext";
+// Font preconnect is handled via <link> tags below
 
 export const metadata: Metadata = {
   title: {
@@ -21,7 +22,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="af" className="scroll-smooth">
-      <body className="min-h-screen flex flex-col bg-ink-900 antialiased">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body className="min-h-screen flex flex-col antialiased" style={{ background: "var(--bg)" }}>
         <AuthProvider>
           <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
         </AuthProvider>

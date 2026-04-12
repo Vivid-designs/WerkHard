@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "./Footer";
 import Header from "./Header";
+import RevealObserver from "./RevealObserver";
 
 const BYPASS_PREFIXES = ["/dashboard", "/login"];
 
@@ -31,14 +32,22 @@ export default function PublicLayoutWrapper({ children }: { children: ReactNode 
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-ink-900 flex items-center justify-center">
-        <span className="block w-px h-8 bg-ink-600 animate-pulse" aria-hidden="true" />
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "var(--bg)" }}
+      >
+        <span
+          className="block w-px h-8 animate-pulse"
+          style={{ background: "var(--border)" }}
+          aria-hidden="true"
+        />
       </div>
     );
   }
 
   return (
     <>
+      <RevealObserver />
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
