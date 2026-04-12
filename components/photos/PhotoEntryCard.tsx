@@ -15,7 +15,7 @@ export default function PhotoEntryCard({ entry }: PhotoEntryCardProps) {
   return (
     <article className="group">
       <Link
-        href={`/fotos/${encodeURIComponent(entry.slug)}`}
+        href={`/fotos/${entry.slug}`}
         className="block focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-parchment-500/30 rounded-lg"
       >
         <div className="relative overflow-hidden rounded-lg bg-ink-800 border border-ink-700 transition-all duration-300 group-hover:border-ink-500 group-hover:shadow-card-hover aspect-[4/3]">

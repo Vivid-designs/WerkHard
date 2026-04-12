@@ -142,7 +142,10 @@ export async function getPhotoEntryBySlug(slug: string): Promise<PhotoEntry | nu
     .limit(1)
     .maybeSingle();
 
-  if (error) return null;
+  if (error) {
+    console.error("[photo-service] getPhotoEntryBySlug error", { slug, normalizedSlug, error: error.message });
+    return null;
+  }
 
   if (data) {
     const [entry] = await attachRelated([data]);
@@ -163,7 +166,10 @@ export async function getPhotoEntryBySlug(slug: string): Promise<PhotoEntry | nu
     return normalizedCandidates.has(normalizePhotoSlug(entry.slug));
   });
 
-  if (!matched) return null;
+  if (!matched) {
+    console.warn("[photo-service] getPhotoEntryBySlug: no match found", { slug, normalizedSlug });
+    return null;
+  }
 
   const [entry] = await attachRelated([matched]);
   return entry ?? null;

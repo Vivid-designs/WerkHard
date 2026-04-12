@@ -5,7 +5,7 @@ import FilmStripCarousel from "@/components/photos/FilmStripCarousel";
 import { getPhotoEntryBySlug, getPublishedPhotoEntries } from "@/lib/photo-service";
 import { formatDate } from "@/lib/utils";
 
-export const revalidate = 10;
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   try {
