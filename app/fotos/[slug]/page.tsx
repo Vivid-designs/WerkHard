@@ -8,8 +8,12 @@ import { formatDate } from "@/lib/utils";
 export const revalidate = 10;
 
 export async function generateStaticParams() {
-  const entries = await getPublishedPhotoEntries();
-  return entries.map((entry) => ({ slug: entry.slug }));
+  try {
+    const entries = await getPublishedPhotoEntries();
+    return entries.map((entry) => ({ slug: entry.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
