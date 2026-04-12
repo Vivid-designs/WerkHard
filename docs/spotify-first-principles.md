@@ -49,8 +49,8 @@ In Spotify Developer Dashboard:
 1. Create (or open) your app.
 2. Copy your **Client ID** and **Client Secret**.
 3. Add at least one Redirect URI for one-time authorization token generation.
-   - Example local URI: `http://127.0.0.1:3000/spotify/callback`
-   - Example production URI: `https://spencesa.co.za/spotify/callback`
+   - Example local URI: `http://127.0.0.1:3000/api/spotify/callback`
+   - Example production URI: `https://spencesa.co.za/api/spotify/callback`
 4. Save settings.
 
 > Redirect URI must exactly match what you use in your authorization request.
@@ -82,6 +82,7 @@ Add these values in your Next.js root `.env.local` file:
 SPOTIFY_CLIENT_ID=your_client_id
 SPOTIFY_CLIENT_SECRET=your_client_secret
 SPOTIFY_REFRESH_TOKEN=your_refresh_token
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/spotify/callback
 ```
 
 Restart `npm run dev` after editing env vars.

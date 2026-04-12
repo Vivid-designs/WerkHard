@@ -40,59 +40,93 @@ export default async function SpotifyAuthPage({ searchParams }: SpotifyAuthPageP
   const error = searchParams.error;
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
-      <h1 className="text-3xl font-bold tracking-tight">Spotify OAuth Helper</h1>
-      <p className="mt-3 text-gray-600">
-        Use this page to authorize your Spotify app and generate a refresh token.
-      </p>
+    <main className="container-narrow section-spacing">
+      <div className="max-w-prose-wide">
+        <p className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-4">
+          Spotify OAuth Helper
+        </p>
+        <h1 className="font-serif text-display-md text-parchment-100 mb-3">
+          Koppel Spotify
+        </h1>
+        <p className="font-body text-parchment-400 text-base leading-relaxed mb-10">
+          Gebruik hierdie bladsy om jou Spotify-app te magtig en 'n refresh token te genereer vir die widgets.
+        </p>
 
-      <ol className="mt-6 list-decimal space-y-2 pl-6 text-gray-800">
-        <li>
-          Add these environment variables: <code>SPOTIFY_CLIENT_ID</code>,{" "}
-          <code>SPOTIFY_CLIENT_SECRET</code>, and <code>SPOTIFY_REDIRECT_URI</code>.
-        </li>
-        <li>
-          In Spotify Developer Dashboard, whitelist your callback URL (example: <code>http://127.0.0.1:3000/api/spotify/callback</code>).
-        </li>
-        <li>Click authorize and approve permissions.</li>
-      </ol>
+        <div className="bg-ink-800 border border-ink-600 rounded-lg p-6 mb-6">
+          <h2 className="font-serif text-display-sm text-parchment-100 mb-4">Opstelling</h2>
+          <ol className="space-y-3 font-body text-parchment-400 text-sm leading-relaxed list-decimal pl-5">
+            <li>
+              Stel hierdie omgewingsveranderlikes in:
+              <div className="mt-2 space-y-1">
+                {["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REDIRECT_URI"].map((v) => (
+                  <code key={v} className="block rounded border border-ink-600 bg-ink-700 px-3 py-1.5 font-mono text-xs text-parchment-300">
+                    {v}
+                  </code>
+                ))}
+              </div>
+            </li>
+            <li>
+              Registreer hierdie callback-URL in jou{" "}
+              <span className="text-parchment-300">Spotify Developer Dashboard</span> onder Redirect URIs:
+              <div className="mt-2 space-y-1">
+                <code className="block rounded border border-ink-600 bg-ink-700 px-3 py-1.5 font-mono text-xs text-parchment-300">
+                  http://127.0.0.1:3000/api/spotify/callback
+                </code>
+                <code className="block rounded border border-ink-600 bg-ink-700 px-3 py-1.5 font-mono text-xs text-parchment-300">
+                  https://spencesa.co.za/api/spotify/callback
+                </code>
+              </div>
+              <p className="mt-2 text-xs text-parchment-600">
+                Stel <code className="font-mono">SPOTIFY_REDIRECT_URI</code> op die ooreenstemmende URL in jou omgewing.
+              </p>
+            </li>
+            <li>Klik die knoppie hieronder en keur die toestemmings goed.</li>
+            <li>
+              Kopieer die <code className="font-mono text-xs text-parchment-300">SPOTIFY_REFRESH_TOKEN</code>{" "}
+              wat verskyn en voeg dit by jou omgewingsveranderlikes.
+            </li>
+          </ol>
+        </div>
 
-      <div className="mt-8">
         <a
           href="/api/spotify/login"
-          className="inline-flex items-center rounded bg-black px-4 py-2 font-medium text-white hover:bg-gray-800"
+          className="inline-flex items-center gap-2 rounded-md bg-sage/20 border border-sage/30 px-5 py-3 font-sans text-sm font-medium text-sage transition-colors duration-200 hover:bg-sage/30"
         >
-          Authorize with Spotify
+          Magtig met Spotify ↗
         </a>
-      </div>
 
-      {error ? (
-        <div className="mt-8 rounded border border-red-200 bg-red-50 p-4 text-red-800">
-          <p className="font-semibold">Authorization error</p>
-          <p className="mt-1">{error}</p>
-        </div>
-      ) : null}
+        {error ? (
+          <div className="mt-8 rounded-lg border border-peach/30 bg-peach/10 p-5">
+            <p className="font-sans text-sm font-medium text-peach mb-1">Magtigingsfout</p>
+            <p className="font-body text-sm text-parchment-400">{error}</p>
+          </div>
+        ) : null}
 
-      {authResult ? (
-        <section className="mt-8 rounded border border-green-200 bg-green-50 p-4">
-          <h2 className="text-lg font-semibold text-green-900">Success 🎉</h2>
-          <p className="mt-2 text-green-900">
-            Save this value as <code>SPOTIFY_REFRESH_TOKEN</code> in your environment.
-          </p>
-          <pre className="mt-3 overflow-x-auto rounded bg-white p-3 text-sm text-green-900">
-            {authResult.refreshToken}
-          </pre>
-          {authResult.accessTokenReceived ? (
-            <p className="mt-3 text-sm text-green-800">
-              Temporary access token received (expires in {authResult.expiresIn ?? "unknown"} seconds).
+        {authResult ? (
+          <div className="mt-8 rounded-lg border border-sage/30 bg-sage/10 p-5">
+            <p className="font-sans text-sm font-medium text-sage mb-2">Sukses — token ontvang</p>
+            <p className="font-body text-sm text-parchment-400 mb-3">
+              Stoor hierdie waarde as <code className="font-mono text-xs text-parchment-300">SPOTIFY_REFRESH_TOKEN</code> in jou omgewing:
             </p>
-          ) : null}
-        </section>
-      ) : null}
+            <pre className="overflow-x-auto rounded border border-ink-600 bg-ink-700 px-4 py-3 font-mono text-xs text-parchment-200 leading-relaxed">
+              {authResult.refreshToken}
+            </pre>
+            {authResult.accessTokenReceived ? (
+              <p className="mt-3 font-sans text-xs text-parchment-600">
+                Tydelike toegangstoken ontvang (verval in {authResult.expiresIn ?? "onbekend"} sekondes).
+              </p>
+            ) : null}
+          </div>
+        ) : null}
 
-      <p className="mt-8 text-sm text-gray-600">
-        Need to retry? Go back to <Link href="/spotify-auth" className="underline">/spotify-auth</Link>.
-      </p>
+        <p className="mt-10 font-body text-sm text-parchment-600">
+          Wil jy weer probeer?{" "}
+          <Link href="/spotify-auth" className="text-parchment-400 underline underline-offset-2 hover:text-parchment-200">
+            Laai die bladsy versnu
+          </Link>
+          .
+        </p>
+      </div>
     </main>
   );
 }
