@@ -2,21 +2,30 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 import type { PhotoEntry } from "@/lib/photo-service";
 import { formatDateShort } from "@/lib/utils";
 
 export default function PhotoManager() {
+  const { session } = useAuth();
   const [entries, setEntries] = useState<PhotoEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState<string | null>(null);
 
+  function getAuthHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {};
+    const token = session?.access_token;
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return headers;
+  }
+
   const load = useCallback(async () => {
     setLoading(true);
-    const response = await fetch("/api/photos");
+    const response = await fetch("/api/photos", { headers: getAuthHeaders() });
     const data = await response.json();
     setEntries(data.entries ?? []);
     setLoading(false);
-  }, []);
+  }, [session?.access_token]);
 
   useEffect(() => {
     void load();
@@ -25,7 +34,7 @@ export default function PhotoManager() {
   async function handleToggle(entry: PhotoEntry) {
     await fetch(`/api/photos/${entry.id}/toggle-publish`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
       body: JSON.stringify({ published: !entry.published }),
     });
 
@@ -33,7 +42,7 @@ export default function PhotoManager() {
   }
 
   async function handleDelete(id: string) {
-    await fetch(`/api/photos/${id}`, { method: "DELETE" });
+    await fetch(`/api/photos/${id}`, { method: "DELETE", headers: getAuthHeaders() });
     setConfirming(null);
     void load();
   }
