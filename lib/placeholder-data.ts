@@ -4,39 +4,39 @@ import type { Post, NavItem, SocialLink } from "./types";
 export const featuredPosts: Post[] = [
   {
     id: "1",
-    slug: "on-keeping-a-commonplace-book",
-    title: "On Keeping a Commonplace Book",
+    slug: "oor-die-hou-van-n-aantekeninge-boek",
+    title: "Oor die Hou van 'n Aantekeninge-boek",
     excerpt:
-      "For centuries, writers and thinkers kept personal archives of passages that moved them. I've been doing the same, and it has quietly changed how I read.",
+      "Vir eeue het skrywers en denkers persoonlike argiewe gehou van gedeeltes wat hulle geraak het. Ek doen dieselfde, en dit het stilletjies verander hoe ek lees.",
     category: "Essay",
     publishedAt: "2024-03-12",
     readingTime: 7,
     featured: true,
-    tags: ["writing", "reading", "habit"],
+    tags: ["skryf", "lees", "gewoonte"],
   },
   {
     id: "2",
-    slug: "the-long-view-in-short-sentences",
-    title: "The Long View in Short Sentences",
+    slug: "die-lang-siening-in-kort-sinne",
+    title: "Die Lang Siening in Kort Sinne",
     excerpt:
-      "There's a kind of compression possible in very short prose that no other form can quite match. A few notes on the strange power of brevity.",
+      "Daar is 'n soort kompressie moontlik in baie kort prosa wat geen ander vorm heeltemal kan ewenaar nie. 'n Paar notas oor die vreemde krag van kortheid.",
     category: "Craft",
     publishedAt: "2024-02-28",
     readingTime: 5,
     featured: true,
-    tags: ["craft", "prose", "style"],
+    tags: ["skryfkuns", "prosa", "styl"],
   },
   {
     id: "3",
-    slug: "seven-winters-in-oslo",
-    title: "Seven Winters in Oslo",
+    slug: "sewe-winters-in-oslo",
+    title: "Sewe Winters in Oslo",
     excerpt:
-      "Each January I return to the same city, the same grey light over the fjord. By now I know it well enough to stop pretending I'm just a visitor.",
+      "Elke Januarie keer ek terug na dieselfde stad, dieselfde grys lig oor die fjord. Teen nou ken ek dit goed genoeg om op te hou maak asof ek net 'n besoeker is.",
     category: "Travel",
     publishedAt: "2024-01-20",
     readingTime: 9,
     featured: true,
-    tags: ["travel", "memory", "place"],
+    tags: ["reis", "herinnering", "plek"],
   },
 ];
 

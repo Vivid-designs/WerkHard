@@ -36,7 +36,7 @@ export default function TopTracks() {
         ) : !data?.tracks.length ? (
           <EmptyState />
         ) : (
-          <ol className="divide-y divide-ink-600" aria-label="Top tracks">
+          <ol className="divide-y divide-ink-600" aria-label="Topnommers">
             {data.tracks.map((track, i) => (
               <TrackRow key={track.id} track={track} rank={i + 1} />
             ))}
@@ -63,7 +63,7 @@ function TrackRow({ track, rank }: { track: SpotifyTrack; rank: number }) {
           "transition-colors duration-200 hover:bg-ink-800",
           "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-parchment-500/30",
         ].join(" ")}
-        aria-label={`${rank}. ${track.name} deur ${artists} — open in Spotify`}
+        aria-label={`${rank}. ${track.name} deur ${artists} — maak oop in Spotify`}
       >
         <span
           className={[

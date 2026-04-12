@@ -3,14 +3,14 @@ import SocialLinks from "@/components/contact/SocialLinks";
 import AuthSection from "@/components/contact/AuthSection";
 
 export const metadata: Metadata = {
-  title: "Contact",
+  title: "Kontak",
   description: "Kontak Lario — WhatsApp, Spotify, X, of skep 'n rekening op die webwerf.",
 };
 
 export default function ContactPage() {
   return (
     <>
-      <section aria-label="Contact page header" className="border-b border-ink-700 relative overflow-hidden">
+      <section aria-label="Kontak bladsy opskrif" className="border-b border-ink-700 relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
           aria-hidden="true"
@@ -23,7 +23,7 @@ export default function ContactPage() {
         <div className="container-narrow section-spacing">
           <div className="max-w-prose-wide">
             <p className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-5 animate-fade-in">
-              Contact
+              Kontak
             </p>
             <h1 className="font-serif text-display-lg text-parchment-100 mb-7 animate-fade-up opacity-0 delay-100">
               Kom in <em className="text-rose">kontak.</em>

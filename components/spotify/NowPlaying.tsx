@@ -72,7 +72,7 @@ function TrackDisplay({ track }: { track: NonNullable<NowPlayingResult["track"]>
           target="_blank"
           rel="noopener noreferrer"
           className="group block shrink-0 overflow-hidden rounded"
-          aria-label={`Open ${track.name} in Spotify`}
+          aria-label={`Maak ${track.name} oop in Spotify`}
           tabIndex={-1}
         >
           <Image
@@ -106,7 +106,7 @@ function TrackDisplay({ track }: { track: NonNullable<NowPlayingResult["track"]>
         target="_blank"
         rel="noopener noreferrer"
         className="shrink-0 text-sm text-parchment-600 transition-colors duration-200 hover:text-sage"
-        aria-label="Open in Spotify"
+        aria-label="Maak oop in Spotify"
       >
         ↗
       </a>

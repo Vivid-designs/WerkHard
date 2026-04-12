@@ -6,12 +6,12 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const publicNavItems = [
-  { label: "Home", href: "/" },
+  { label: "Tuis", href: "/" },
   { label: "WerkHard", href: "/werkhard" },
   { label: "Skryf", href: "/skryf" },
   { label: "Fotos", href: "/fotos" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "Oor", href: "/about" },
+  { label: "Kontak", href: "/contact" },
 ];
 
 export default function Header() {
@@ -21,7 +21,7 @@ export default function Header() {
 
   const navItems = [...publicNavItems, isAdmin
     ? { label: "Dashboard", href: "/dashboard" }
-    : { label: "Login", href: "/login" }];
+    : { label: "Teken in", href: "/login" }];
 
   const handleSignOut = async () => {
     await signOut();
@@ -58,7 +58,7 @@ export default function Header() {
                   onClick={handleSignOut}
                   className="font-sans text-xs tracking-widest uppercase text-parchment-400 hover:text-parchment-100 transition-colors duration-200"
                 >
-                  Logout
+                  Meld af
                 </button>
               </li>
             ) : null}
@@ -68,7 +68,7 @@ export default function Header() {
         <button
           className="md:hidden flex flex-col gap-1.5 p-2 text-parchment-400 hover:text-parchment-100 transition-colors"
           onClick={() => setMenuOpen((v) => !v)}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-label={menuOpen ? "Maak kieslys toe" : "Maak kieslys oop"}
           aria-expanded={menuOpen}
         >
           <span className={`block w-5 h-px bg-current transition-transform duration-200 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
@@ -101,7 +101,7 @@ export default function Header() {
                   onClick={handleSignOut}
                   className="font-sans text-xs tracking-widest uppercase text-parchment-300 hover:text-parchment-100 transition-colors duration-200"
                 >
-                  Logout
+                  Meld af
                 </button>
               </li>
             ) : null}

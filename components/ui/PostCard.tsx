@@ -42,7 +42,7 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
       <footer className="flex items-center gap-4 text-parchment-500 text-xs font-sans">
         <time dateTime={post.publishedAt}>{formatDateShort(post.publishedAt)}</time>
         <span aria-hidden="true">·</span>
-        <span>{post.readingTime} min read</span>
+        <span>{post.readingTime} min lees</span>
       </footer>
 
       <div

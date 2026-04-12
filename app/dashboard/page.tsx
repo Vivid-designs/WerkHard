@@ -27,7 +27,7 @@ export default function DashboardPage() {
           Dashboard
         </h1>
         <p className="mt-4 font-body text-base leading-relaxed text-parchment-300">
-          Welcome back{user?.email ? `, ${user.email}` : ""}. This is your private dashboard shell.
+          Welkom terug{user?.email ? `, ${user.email}` : ""}. Dit is jou privaat paneelbord.
         </p>
 
         <div className="mt-10 rounded-md border border-ink-600 bg-ink-900/70 p-6">
@@ -68,7 +68,7 @@ export default function DashboardPage() {
               loggingOut ? "cursor-not-allowed opacity-60" : "",
             ].join(" ")}
           >
-            {loggingOut ? "Logging out..." : "Logout"}
+            {loggingOut ? "Meld af…" : "Meld af"}
           </button>
         </div>
       </div>
