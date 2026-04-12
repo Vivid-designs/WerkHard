@@ -59,10 +59,25 @@ function tryParseCookieToken(rawValue: string): string | null {
 
 function getAccessTokenFromSupabaseCookie(): string | null {
   const cookieStore = cookies();
-  const authCookie = cookieStore
-    .getAll()
-    .find((cookie) => cookie.name.startsWith("sb-") && cookie.name.endsWith("-auth-token"));
+  const all = cookieStore.getAll();
 
+  // Supabase JS v2.44+ splits the auth token across chunked cookies:
+  // sb-xxx-auth-token.0, sb-xxx-auth-token.1, ...
+  // Collect and reassemble them in order before parsing.
+  const chunkCookies = all
+    .filter((c) => c.name.match(/^sb-.+-auth-token\.\d+$/))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  if (chunkCookies.length > 0) {
+    const reassembled = chunkCookies.map((c) => decodeURIComponent(c.value)).join("");
+    const token = tryParseCookieToken(reassembled);
+    if (token) return token;
+  }
+
+  // Fallback: single non-chunked cookie (older Supabase JS versions)
+  const authCookie = all.find(
+    (cookie) => cookie.name.startsWith("sb-") && cookie.name.endsWith("-auth-token"),
+  );
   if (!authCookie) return null;
 
   return tryParseCookieToken(authCookie.value);
@@ -76,17 +91,29 @@ function getAccessTokenFromRequestCookies(request?: Request): string | null {
 
   const cookieParts = cookieHeader.split(";");
 
+  const parsedCookies: { name: string; value: string }[] = [];
   for (const cookiePart of cookieParts) {
     const [nameRaw, ...valueParts] = cookiePart.trim().split("=");
     const cookieName = nameRaw?.trim() ?? "";
-    if (!cookieName.startsWith("sb-") || !cookieName.endsWith("-auth-token")) {
-      continue;
-    }
+    if (!cookieName.startsWith("sb-")) continue;
+    parsedCookies.push({ name: cookieName, value: valueParts.join("=") });
+  }
 
-    const cookieValue = valueParts.join("=");
-    if (!cookieValue) continue;
+  // Try chunked cookies first (Supabase JS v2.44+)
+  const chunks = parsedCookies
+    .filter((c) => c.name.match(/^sb-.+-auth-token\.\d+$/))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-    const token = tryParseCookieToken(cookieValue);
+  if (chunks.length > 0) {
+    const reassembled = chunks.map((c) => decodeURIComponent(c.value)).join("");
+    const token = tryParseCookieToken(reassembled);
+    if (token) return token;
+  }
+
+  // Fallback: single non-chunked cookie
+  for (const cookie of parsedCookies) {
+    if (!cookie.name.endsWith("-auth-token")) continue;
+    const token = tryParseCookieToken(cookie.value);
     if (token) return token;
   }
 
