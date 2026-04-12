@@ -23,6 +23,7 @@ export interface Post {
 export interface NavItem {
   label: string;
   href: string;
+  description?: string;
 }
 
 export interface SocialLink {

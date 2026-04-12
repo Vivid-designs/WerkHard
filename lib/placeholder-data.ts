@@ -56,6 +56,18 @@ export const footerNav: NavItem[] = [
   { label: "Kontak", href: "/contact" },
 ];
 
+export const footerNavLinks: NavItem[] = [
+  { label: "Tuis",     href: "/" },
+  { label: "WerkHard", href: "/werkhard" },
+  { label: "Oor My",   href: "/about" },
+  { label: "Kontak",   href: "/contact" },
+];
+
+export const footerContentNav: NavItem[] = [
+  { label: "Skryf", href: "/skryf", description: "Essays en aantekeninge" },
+  { label: "Fotos", href: "/fotos", description: "Beelde van die lewe" },
+];
+
 export const socialLinks: SocialLink[] = [
   { label: "X (Twitter)", href: "https://x.com/Werk__Hard" },
   { label: "Instagram", href: "https://instagram.com/spencesa" },
