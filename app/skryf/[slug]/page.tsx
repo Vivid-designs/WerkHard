@@ -6,7 +6,7 @@ import { getWritingBySlug, getPublishedWriting } from "@/lib/writing-service";
 import WritingBodyRenderer from "@/components/writing/WritingBodyRenderer";
 import { formatDate } from "@/lib/utils";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   try {
