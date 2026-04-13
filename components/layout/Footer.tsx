@@ -1,77 +1,130 @@
+import type React from "react";
 import Link from "next/link";
 import { footerNavLinks, footerContentNav } from "@/lib/placeholder-data";
 
 const socialLinks = [
-  { label: "X (Twitter)", href: "https://x.com/Werk__Hard",        accent: "hover:text-rose" },
-  { label: "Instagram",   href: "https://instagram.com/spencesa",   accent: "hover:text-rose" },
-  { label: "Spotify",     href: "https://open.spotify.com",         accent: "hover:text-sage" },
-  { label: "Substack",    href: "https://substack.com",             accent: "hover:text-lavender" },
+  { label: "X (Twitter)", href: "https://x.com/Werk__Hard",        accent: "var(--blush)" },
+  { label: "Instagram",   href: "https://instagram.com/spencesa",   accent: "var(--blush)" },
+  { label: "Spotify",     href: "https://open.spotify.com",         accent: "var(--sage)" },
+  { label: "Substack",    href: "https://substack.com",             accent: "var(--lavender)" },
 ];
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-ink-700 bg-ink-950 mt-auto">
-      <div className="container-wide py-12 md:py-16">
+    <footer
+      style={{
+        borderTop: "1px solid var(--border)",
+        background: "var(--bg2)",
+        marginTop: "auto",
+      }}
+    >
+      <div className="container-wide" style={{ paddingTop: "3rem", paddingBottom: "3rem" }}>
 
         {/* CTA strip */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
-          <p className="font-serif italic text-sm text-parchment-400 leading-relaxed">
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "1rem",
+            marginBottom: "0.5rem",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--body)",
+              fontStyle: "italic",
+              fontSize: "0.9rem",
+              color: "var(--muted)",
+              lineHeight: 1.7,
+            }}
+          >
             Volg nuwe skryfwerk op{" "}
             <a
               href="https://substack.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-parchment-300 hover:text-parchment-100 underline underline-offset-2 transition-colors duration-200"
+              style={{
+                color: "var(--lavender)",
+                textDecoration: "underline",
+                textUnderlineOffset: "3px",
+              }}
             >
               Substack
             </a>{" "}
             — nuwe stukke elke paar weke.
           </p>
-          <Link
-            href="/skryf"
-            className="font-sans text-2xs tracking-widest uppercase text-parchment-500 hover:text-parchment-300 transition-colors duration-200 shrink-0"
-          >
+          <Link href="/skryf" className="archive-link" style={{ flexShrink: 0 }}>
             Alle skryfwerk →
           </Link>
         </div>
 
-        {/* Ornament divider */}
-        <div className="ornament text-parchment-700 text-xs my-10" aria-hidden="true">
+        {/* Divider */}
+        <div
+          className="ornament"
+          aria-hidden="true"
+          style={{ margin: "2.5rem 0", fontSize: "0.7rem" }}
+        >
           &mdash;
         </div>
 
         {/* 4-column grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
-
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gap: "2.5rem",
+          }}
+        >
           {/* Col 1 — Brand */}
           <div>
             <Link
               href="/"
-              className="font-serif text-lg text-parchment-100 hover:text-white transition-colors duration-200"
+              className="hover-lift"
+              style={{
+                fontFamily: "var(--serif)",
+                fontWeight: 700,
+                fontSize: "1.05rem",
+                color: "var(--text)",
+              }}
             >
               Spencesa
             </Link>
-            <p className="mt-3 font-body text-sm text-parchment-500 leading-relaxed">
+            <p
+              style={{
+                marginTop: "0.75rem",
+                fontFamily: "var(--body)",
+                fontSize: "0.87rem",
+                color: "var(--muted)",
+                lineHeight: 1.7,
+              }}
+            >
               Gedagtes, projekte en lesse — van tegnologie tot persoonlike groei.
             </p>
-            <p className="mt-4 font-sans text-2xs text-parchment-700 tracking-wide">
-              Geskryf en onderhou in Afrikaans.
+            <p
+              className="mono-label"
+              style={{ marginTop: "1rem" }}
+            >
+              Geskryf in Afrikaans.
             </p>
           </div>
 
           {/* Col 2 — Navigeer */}
           <div>
-            <h4 className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-4">
-              Navigeer
-            </h4>
-            <ul className="flex flex-col gap-2.5">
+            <h4 className="mono-label" style={{ marginBottom: "1rem" }}>Navigeer</h4>
+            <ul style={{ display: "flex", flexDirection: "column", gap: "0.6rem", listStyle: "none", padding: 0, margin: 0 }}>
               {footerNavLinks.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="font-body text-sm text-parchment-400 hover:text-parchment-200 transition-colors duration-200"
+                    className="hover-lift"
+                    style={{
+                      fontFamily: "var(--body)",
+                      fontSize: "0.87rem",
+                    }}
                   >
                     {item.label}
                   </Link>
@@ -82,20 +135,33 @@ export default function Footer() {
 
           {/* Col 3 — Inhoud */}
           <div>
-            <h4 className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-4">
-              Inhoud
-            </h4>
-            <ul className="flex flex-col gap-4">
+            <h4 className="mono-label" style={{ marginBottom: "1rem" }}>Inhoud</h4>
+            <ul style={{ display: "flex", flexDirection: "column", gap: "0.9rem", listStyle: "none", padding: 0, margin: 0 }}>
               {footerContentNav.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="font-body text-sm text-parchment-300 hover:text-sage transition-colors duration-200 block"
+                    className="hover-lift"
+                    style={{
+                      fontFamily: "var(--body)",
+                      fontSize: "0.87rem",
+                      color: "var(--text)",
+                      display: "block",
+                    }}
                   >
                     {item.label}
                   </Link>
                   {item.description && (
-                    <span className="font-sans text-xs text-parchment-600 mt-0.5 block">
+                    <span
+                      style={{
+                        fontFamily: "var(--mono)",
+                        fontSize: "0.58rem",
+                        letterSpacing: "0.1em",
+                        color: "var(--muted)",
+                        marginTop: "0.2rem",
+                        display: "block",
+                      }}
+                    >
                       {item.description}
                     </span>
                   )}
@@ -104,22 +170,25 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 4 — Sosiaal */}
+          {/* Col 4 — Sosiaal — uses --hover-color CSS var set per-item */}
           <div>
-            <h4 className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-4">
-              Vind my elders
-            </h4>
-            <ul className="flex flex-col gap-2.5">
+            <h4 className="mono-label" style={{ marginBottom: "1rem" }}>Vind my elders</h4>
+            <ul style={{ display: "flex", flexDirection: "column", gap: "0.6rem", listStyle: "none", padding: 0, margin: 0 }}>
               {socialLinks.map((link) => (
                 <li key={link.href}>
                   <a
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`font-body text-sm text-parchment-400 transition-colors duration-200 ${link.accent}`}
+                    className="social-link"
+                    style={
+                      { "--hover-color": link.accent } as React.CSSProperties
+                    }
                   >
-                    {link.label}
-                    <span className="ml-1 text-parchment-600 text-xs" aria-hidden="true">↗</span>
+                    <span style={{ fontFamily: "var(--body)", fontSize: "0.87rem" }}>
+                      {link.label}
+                    </span>
+                    <span aria-hidden="true" style={{ marginLeft: "0.3rem", opacity: 0.4, fontSize: "0.8rem" }}>↗</span>
                   </a>
                 </li>
               ))}
@@ -128,13 +197,20 @@ export default function Footer() {
         </div>
 
         {/* Copyright bar */}
-        <div className="mt-12 pt-6 border-t border-ink-700 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="font-sans text-xs text-parchment-600">
-            © {year} Spencesa. Alle regte voorbehou.
-          </p>
-          <p className="font-sans text-xs text-parchment-600">
-            Geskryf en onderhou met sorg.
-          </p>
+        <div
+          style={{
+            marginTop: "3rem",
+            paddingTop: "1.5rem",
+            borderTop: "1px solid var(--border)",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "0.75rem",
+          }}
+        >
+          <p className="mono-label">© {year} Spencesa. Alle regte voorbehou.</p>
+          <p className="mono-label">Geskryf en onderhou met sorg.</p>
         </div>
 
       </div>

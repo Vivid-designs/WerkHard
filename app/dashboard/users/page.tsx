@@ -101,7 +101,8 @@ export default function UsersPage() {
 
   const stats = {
     total: users.length,
-    admins: users.filter((user) => user.is_admin).length,
+    admins: users.filter((user) => user.role === "admin").length,
+    superLario: users.filter((user) => user.role === "super_lario").length,
     blocked: users.filter((user) => user.blocked).length,
   };
 
@@ -113,10 +114,11 @@ export default function UsersPage() {
         <p className="font-body text-parchment-500 text-sm mt-2">Bestuur alle geregistreerde gebruikers.</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 md:gap-4 animate-fade-up opacity-0 delay-200" aria-label="Gebruiker statistieke">
+      <div className="grid grid-cols-4 gap-3 md:gap-4 animate-fade-up opacity-0 delay-200" aria-label="Gebruiker statistieke">
         {[
           { label: "Totaal", value: stats.total },
           { label: "Admins", value: stats.admins },
+          { label: "Super Lario", value: stats.superLario },
           { label: "Geblokkeer", value: stats.blocked },
         ].map((stat) => (
           <div key={stat.label} className="bg-ink-800 border border-ink-600 rounded-lg px-5 py-4">
@@ -235,7 +237,7 @@ export default function UsersPage() {
                     </td>
 
                     <td className="py-4 px-5 align-top">
-                      <RoleBadge isAdmin={user.is_admin} blocked={user.blocked} />
+                      <RoleBadge isAdmin={user.is_admin} blocked={user.blocked} role={user.role} />
                     </td>
 
                     <td className="py-4 px-5 align-top">

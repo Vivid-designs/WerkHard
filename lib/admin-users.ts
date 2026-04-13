@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import type { UserRole } from "@/lib/types";
 
 function getAccessTokenFromAuthorizationHeader(request?: Request): string | null {
   if (!request) return null;
@@ -17,6 +18,7 @@ export interface UserProfile {
   email: string;
   full_name: string | null;
   is_admin: boolean;
+  role: UserRole;
   blocked: boolean;
   blocked_at: string | null;
   created_at: string;
@@ -27,6 +29,7 @@ interface ProfileRow {
   id: string;
   full_name: string | null;
   is_admin: boolean;
+  role: UserRole;
   blocked: boolean;
   blocked_at: string | null;
   created_at: string;
@@ -173,6 +176,26 @@ export async function requireAdminUser(request?: Request): Promise<{ userId: str
   return { userId: user.id };
 }
 
+export async function getAuthenticatedUserRole(request?: Request): Promise<UserRole | null> {
+  const accessToken = getAccessToken(request);
+  if (!accessToken) return null;
+
+  const {
+    data: { user },
+    error,
+  } = await getSupabaseAdmin().auth.getUser(accessToken);
+
+  if (error || !user) return null;
+
+  const { data: profile } = await getSupabaseAdmin()
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  return (profile?.role as UserRole) ?? "normal";
+}
+
 export async function fetchAllUsers(): Promise<UserProfile[]> {
   const {
     data: { users: authUsers },
@@ -183,7 +206,7 @@ export async function fetchAllUsers(): Promise<UserProfile[]> {
 
   const { data: profiles } = await getSupabaseAdmin()
     .from("profiles")
-    .select("id, full_name, is_admin, blocked, blocked_at, created_at");
+    .select("id, full_name, is_admin, role, blocked, blocked_at, created_at");
 
   const profileMap = new Map(
     ((profiles as ProfileRow[] | null | undefined) ?? []).map((profile) => [profile.id, profile]),
@@ -196,6 +219,7 @@ export async function fetchAllUsers(): Promise<UserProfile[]> {
       email: authUser.email ?? "",
       full_name: profile?.full_name ?? null,
       is_admin: profile?.is_admin ?? false,
+      role: (profile?.role ?? 'normal') as UserRole,
       blocked: profile?.blocked ?? false,
       blocked_at: profile?.blocked_at ?? null,
       created_at: profile?.created_at ?? authUser.created_at,

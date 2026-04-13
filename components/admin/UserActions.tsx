@@ -159,6 +159,22 @@ export default function UserActions({ user, currentId, onRefresh }: UserActionsP
         </button>
       )}
 
+      {!isSelf && user.role !== "admin" && (
+        <button
+          onClick={() =>
+            run(() =>
+              apiPatch(user.id, {
+                action: user.role === "super_lario" ? "remove_super_lario" : "set_super_lario",
+              }),
+            )
+          }
+          disabled={state === "loading"}
+          className={user.role === "super_lario" ? btnMuted : `${btnBase} text-amber-400 border-amber-400/30 hover:bg-amber-400/10 hover:border-amber-400/50`}
+        >
+          {user.role === "super_lario" ? "Verwyder Super Lario" : "Maak Super Lario"}
+        </button>
+      )}
+
       <button
         onClick={handleReset}
         disabled={state === "loading"}

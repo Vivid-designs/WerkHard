@@ -3,7 +3,9 @@
 import { useRef, useState, type DragEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { DisplayType, PeopleTag, PhotoEntry } from "@/lib/photo-service";
+import type { AccessLevel } from "@/lib/types";
 import PeopleTagInput from "./PeopleTagInput";
+import AccessLevelPicker from "@/components/ui/AccessLevelPicker";
 import { useAuth } from "@/context/AuthContext";
 
 interface ImageDraft {
@@ -59,6 +61,7 @@ export default function PhotoForm({ initial, mode }: PhotoFormProps) {
   const [peopleTags, setPeopleTags] = useState<Omit<PeopleTag, "id">[]>(
     initial?.people_tags.map((tag) => ({ name: tag.name, handle: tag.handle })) ?? [],
   );
+  const [accessLevel, setAccessLevel] = useState<AccessLevel>(initial?.access_level ?? "public");
   const [slugManual, setSlugManual] = useState(mode === "edit");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -174,6 +177,7 @@ export default function PhotoForm({ initial, mode }: PhotoFormProps) {
       display_type: displayType,
       published,
       featured,
+      access_level: accessLevel,
       images: images.map((image, index) => ({
         image_url: image.url,
         alt_text: image.alt_text || null,
@@ -438,6 +442,12 @@ export default function PhotoForm({ initial, mode }: PhotoFormProps) {
       <PeopleTagInput tags={peopleTags} onChange={setPeopleTags} />
 
       <SectionLabel>Instellings</SectionLabel>
+
+      <div>
+        <p className={labelClass}>Toegangsvlak</p>
+        <AccessLevelPicker value={accessLevel} onChange={setAccessLevel} />
+      </div>
+
       <div className="flex flex-col gap-3">
         <Toggle
           checked={published}

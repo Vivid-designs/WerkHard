@@ -3,8 +3,10 @@
 import { useState, useEffect, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { WritingPiece, Category } from "@/lib/writing-service";
+import type { AccessLevel } from "@/lib/types";
 import CategorySelector from "./CategorySelector";
 import CoverImageUpload from "./CoverImageUpload";
+import AccessLevelPicker from "@/components/ui/AccessLevelPicker";
 import { useAuth } from "@/context/AuthContext";
 
 interface WritingFormProps {
@@ -46,6 +48,7 @@ export default function WritingForm({ initial, categories, mode }: WritingFormPr
   const [published, setPublished] = useState(initial?.published ?? false);
   const [featured, setFeatured] = useState(initial?.featured ?? false);
   const [catIds, setCatIds] = useState<string[]>(initial?.categories.map((c) => c.id) ?? []);
+  const [accessLevel, setAccessLevel] = useState<AccessLevel>(initial?.access_level ?? "public");
   const [slugManual, setSlugManual] = useState(mode === "edit");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -89,6 +92,7 @@ export default function WritingForm({ initial, categories, mode }: WritingFormPr
       cover_image_url: coverUrl.trim() || undefined,
       published,
       featured,
+      access_level: accessLevel,
       category_ids: catIds,
     };
 
@@ -251,6 +255,11 @@ export default function WritingForm({ initial, categories, mode }: WritingFormPr
       <CategorySelector categories={categories} selected={catIds} onChange={setCatIds} />
 
       <SectionLabel>Instellings</SectionLabel>
+
+      <div>
+        <p className={labelClass}>Toegangsvlak</p>
+        <AccessLevelPicker value={accessLevel} onChange={setAccessLevel} />
+      </div>
 
       <div className="flex flex-col gap-3">
         <label className="flex items-center gap-3 cursor-pointer group">

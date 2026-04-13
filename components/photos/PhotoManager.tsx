@@ -4,7 +4,15 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import type { PhotoEntry } from "@/lib/photo-service";
+import type { AccessLevel } from "@/lib/types";
 import { formatDateShort } from "@/lib/utils";
+
+const ACCESS_BADGE: Record<AccessLevel, { label: string; className: string }> = {
+  public:      { label: "Publiek",  className: "text-sage border-sage/20 bg-sage/8" },
+  members:     { label: "Lede",     className: "text-parchment-400 border-ink-500 bg-ink-700" },
+  super_lario: { label: "SL",       className: "text-amber-400 border-amber-400/20 bg-amber-400/8" },
+  admin_only:  { label: "Admin",    className: "text-peach border-peach/20 bg-peach/8" },
+};
 
 export default function PhotoManager() {
   const { session } = useAuth();
@@ -93,7 +101,7 @@ export default function PhotoManager() {
           <table className="w-full border-collapse min-w-[580px]">
             <thead>
               <tr className="border-b border-ink-600 bg-ink-800">
-                {["Foto", "Titel / Slug", "Tipe", "Status", "Datum", ""].map((heading) => (
+                {["Foto", "Titel / Slug", "Tipe", "Toegang", "Status", "Datum", ""].map((heading) => (
                   <th
                     key={heading}
                     className="text-left py-3 px-5 font-sans text-2xs tracking-widest uppercase text-parchment-600"
@@ -137,6 +145,15 @@ export default function PhotoManager() {
                       >
                         {entry.display_type === "gallery" ? `Galery (${entry.images.length})` : "Enkel"}
                       </span>
+                    </td>
+
+                    <td className="py-3 px-5 align-middle">
+                      {(() => {
+                        const badge = ACCESS_BADGE[entry.access_level ?? "public"];
+                        return (
+                          <span className={`tag border ${badge.className}`}>{badge.label}</span>
+                        );
+                      })()}
                     </td>
 
                     <td className="py-3 px-5 align-middle">

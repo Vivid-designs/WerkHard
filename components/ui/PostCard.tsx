@@ -10,50 +10,101 @@ interface PostCardProps {
 
 export default function PostCard({ post, index = 0 }: PostCardProps) {
   const accentClass = categoryColors[post.category] ?? categoryColors.Essay;
-  const delays = ["delay-100", "delay-200", "delay-300"];
-  const delayClass = delays[index % delays.length];
+  const isFeatured = index === 0;
+  const num = String(index + 1).padStart(2, "0");
+  const staggerClass = `stagger-${Math.min(index + 1, 5)}`;
 
   return (
     <article
-      className={[
-        "group relative flex flex-col",
-        "bg-ink-800 border border-ink-600 rounded-lg p-7 md:p-8",
-        "transition-all duration-300",
-        "hover:border-ink-500 hover:shadow-card-hover",
-        "animate-fade-up opacity-0",
-        delayClass,
-      ].join(" ")}
+      className={`post-card reveal ${staggerClass}`}
+      style={{
+        padding: "2.2rem 2.5rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.9rem",
+        borderLeft: isFeatured ? "2px solid var(--lavender)" : "none",
+        position: "relative",
+        cursor: "pointer",
+      }}
     >
-      <span className={`tag border self-start mb-5 ${accentClass}`}>
-        {post.category}
-      </span>
+      {/* Top row: number + category + date */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <span
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: "0.6rem",
+            letterSpacing: "0.12em",
+            color: "var(--muted)",
+          }}
+        >
+          {num}
+        </span>
+        <span className={`tag ${accentClass}`}>
+          {post.category}
+        </span>
+        <time
+          dateTime={post.publishedAt}
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: "0.6rem",
+            letterSpacing: "0.1em",
+            color: "var(--muted)",
+            marginLeft: "auto",
+          }}
+        >
+          {formatDateShort(post.publishedAt)}
+        </time>
+      </div>
 
-      <h3 className="font-serif text-display-sm text-parchment-100 mb-3 leading-snug group-hover:text-white transition-colors duration-200">
-        <Link href={`/posts/${post.slug}`} className="hover:no-underline focus-visible:outline-none">
-          <span className="absolute inset-0 rounded-lg" aria-hidden="true" />
+      {/* Title */}
+      <h3
+        style={{
+          fontFamily: "var(--serif)",
+          fontWeight: 700,
+          fontSize: isFeatured ? "1.4rem" : "1.15rem",
+          lineHeight: 1.25,
+          color: "var(--text)",
+        }}
+      >
+        <Link
+          href={`/skryf/${post.slug}`}
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          {/* Stretch link to fill card */}
+          <span style={{ position: "absolute", inset: 0 }} aria-hidden="true" />
           {post.title}
         </Link>
       </h3>
 
-      <p className="font-body text-parchment-400 text-sm leading-relaxed mb-6 flex-1">
+      {/* Excerpt */}
+      <p
+        style={{
+          fontFamily: "var(--body)",
+          fontSize: "0.9rem",
+          lineHeight: 1.75,
+          color: "var(--muted)",
+          flex: 1,
+        }}
+      >
         {post.excerpt}
       </p>
 
-      <footer className="flex items-center gap-4 text-parchment-500 text-xs font-sans">
-        <time dateTime={post.publishedAt}>{formatDateShort(post.publishedAt)}</time>
-        <span aria-hidden="true">·</span>
-        <span>{post.readingTime} min lees</span>
+      {/* Footer: "Lees verder" — colour lifts on .post-card:hover via CSS */}
+      <footer>
+        <span
+          data-lees=""
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: "0.62rem",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
+            transition: "color 0.2s",
+          }}
+        >
+          Lees verder →
+        </span>
       </footer>
-
-      <div
-        className={[
-          "absolute bottom-0 left-7 right-7 h-px",
-          "scale-x-0 group-hover:scale-x-100",
-          "transition-transform duration-300 origin-left opacity-60",
-          `bg-current ${accentClass.split(" ")[0]}`,
-        ].join(" ")}
-        aria-hidden="true"
-      />
     </article>
   );
 }

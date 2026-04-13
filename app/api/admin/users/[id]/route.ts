@@ -39,10 +39,16 @@ export async function PATCH(
           .eq("id", id);
         break;
       case "set_admin":
-        await getSupabaseAdmin().from("profiles").update({ is_admin: true }).eq("id", id);
+        await getSupabaseAdmin().from("profiles").update({ is_admin: true, role: "admin" }).eq("id", id);
         break;
       case "remove_admin":
-        await getSupabaseAdmin().from("profiles").update({ is_admin: false }).eq("id", id);
+        await getSupabaseAdmin().from("profiles").update({ is_admin: false, role: "normal" }).eq("id", id);
+        break;
+      case "set_super_lario":
+        await getSupabaseAdmin().from("profiles").update({ role: "super_lario" }).eq("id", id);
+        break;
+      case "remove_super_lario":
+        await getSupabaseAdmin().from("profiles").update({ role: "normal" }).eq("id", id);
         break;
       case "update_profile": {
         const { full_name } = body as { full_name?: string };

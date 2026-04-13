@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
-import { getPublishedWriting } from "@/lib/writing-service";
+import { getPublishedWritingForRole } from "@/lib/writing-service";
 import type { WritingPiece, Category } from "@/lib/writing-service";
+import { getAuthenticatedUserRole } from "@/lib/admin-users";
 import { formatDateShort } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
   description: "Essays, aantekeninge en nadenkings van Lario.",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 function CategoryTag({ category }: { category: Category }) {
   return <span className={`tag border ${category.accent}`}>{category.name}</span>;
@@ -109,7 +111,11 @@ function WritingListItem({ piece }: { piece: WritingPiece }) {
 }
 
 export default async function SkryfPage() {
-  const pieces = await getPublishedWriting();
+  const cookieHeader = cookies().toString();
+  const role = await getAuthenticatedUserRole(
+    new Request("http://localhost", { headers: { cookie: cookieHeader } }),
+  );
+  const pieces = await getPublishedWritingForRole(role);
   const featured = pieces.filter((p) => p.featured).slice(0, 2);
   const archive = pieces.filter((p) => !p.featured);
 
