@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getWritingBySlug, getPublishedWriting } from "@/lib/writing-service";
+import { getWritingBySlugForRole, getPublishedWritingForRole } from "@/lib/writing-service";
+import { getAuthenticatedUserRole } from "@/lib/admin-users";
 import WritingBodyRenderer from "@/components/writing/WritingBodyRenderer";
 import { formatDate } from "@/lib/utils";
 
@@ -10,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   try {
-    const pieces = await getPublishedWriting();
+    const pieces = await getPublishedWritingForRole(null);
     return pieces.map((p) => ({ slug: p.slug }));
   } catch {
     return [];
@@ -18,7 +20,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const piece = await getWritingBySlug(params.slug);
+  const piece = await getWritingBySlugForRole(params.slug, null);
   if (!piece) return { title: "Nie gevind nie" };
 
   return {
@@ -33,7 +35,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function WritingPiecePage({ params }: { params: { slug: string } }) {
-  const piece = await getWritingBySlug(params.slug);
+  const cookieHeader = cookies().toString();
+  const role = await getAuthenticatedUserRole(
+    new Request("http://localhost", { headers: { cookie: cookieHeader } }),
+  );
+  const piece = await getWritingBySlugForRole(params.slug, role);
 
   if (!piece) notFound();
 

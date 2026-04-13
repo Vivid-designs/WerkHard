@@ -78,7 +78,7 @@ export default function UserPreview() {
                     </time>
                   </td>
                   <td className="py-3 px-5">
-                    <RoleBadge isAdmin={user.is_admin} blocked={user.blocked} />
+                    <RoleBadge isAdmin={user.is_admin} blocked={user.blocked} role={user.role} />
                   </td>
                 </tr>
               ))}
@@ -104,13 +104,19 @@ function PreviewSkeleton() {
   );
 }
 
-export function RoleBadge({ isAdmin, blocked }: { isAdmin: boolean; blocked: boolean }) {
+export function RoleBadge({ isAdmin, blocked, role }: { isAdmin: boolean; blocked: boolean; role?: string }) {
   if (blocked) {
     return <span className="tag border text-peach bg-peach/10 border-peach/20">Geblokkeer</span>;
   }
 
-  if (isAdmin) {
+  const effectiveRole = role ?? (isAdmin ? "admin" : "normal");
+
+  if (effectiveRole === "admin") {
     return <span className="tag border text-lavender bg-lavender/10 border-lavender/20">Admin</span>;
+  }
+
+  if (effectiveRole === "super_lario") {
+    return <span className="tag border text-amber-400 bg-amber-400/10 border-amber-400/20">Super Lario</span>;
   }
 
   return <span className="tag border text-parchment-500 bg-ink-700 border-ink-500">Gebruiker</span>;

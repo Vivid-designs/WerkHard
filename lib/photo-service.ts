@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { getSupabaseAdmin } from "./supabase-admin";
+import type { AccessLevel, UserRole } from "./types";
 
 export interface PhotoImage {
   id: string;
@@ -28,6 +29,7 @@ export interface PhotoEntry {
   featured: boolean;
   author_id: string | null;
   published_at: string | null;
+  access_level: AccessLevel;
   created_at: string;
   updated_at: string;
   images: PhotoImage[];
@@ -41,9 +43,18 @@ export interface PhotoInput {
   display_type: DisplayType;
   published?: boolean;
   featured?: boolean;
+  access_level?: AccessLevel;
   author_id?: string;
   images?: Omit<PhotoImage, "id" | "entry_id">[];
   people_tags?: Omit<PeopleTag, "id">[];
+}
+
+function allowedAccessLevels(role: UserRole | null): AccessLevel[] {
+  const levels: AccessLevel[] = ["public"];
+  if (role) levels.push("members");
+  if (role === "super_lario" || role === "admin") levels.push("super_lario");
+  if (role === "admin") levels.push("admin_only");
+  return levels;
 }
 
 export function normalizePhotoSlug(slug: string): string {
@@ -121,6 +132,50 @@ export async function getPublishedPhotoEntries(): Promise<PhotoEntry[]> {
   }
 
   return attachRelated(data ?? []);
+}
+
+export async function getPublishedPhotoEntriesForRole(role: UserRole | null): Promise<PhotoEntry[]> {
+  const allowed = allowedAccessLevels(role);
+
+  const { data, error } = await getSupabaseAdmin()
+    .from("photo_entries")
+    .select("*")
+    .eq("published", true)
+    .in("access_level", allowed)
+    .order("published_at", { ascending: false });
+
+  if (error) {
+    console.error("[photo-service] getPublishedPhotoEntriesForRole", error.message);
+    return [];
+  }
+
+  return attachRelated(data ?? []);
+}
+
+export async function getPhotoEntryBySlugForRole(slug: string, role: UserRole | null): Promise<PhotoEntry | null> {
+  const normalizedSlug = normalizePhotoSlug(slug);
+  const allowed = allowedAccessLevels(role);
+
+  const { data, error } = await getSupabaseAdmin()
+    .from("photo_entries")
+    .select("*")
+    .in("slug", Array.from(new Set([slug, normalizedSlug])))
+    .eq("published", true)
+    .in("access_level", allowed)
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[photo-service] getPhotoEntryBySlugForRole error", { slug, error: error.message });
+    return null;
+  }
+
+  if (data) {
+    const [entry] = await attachRelated([data]);
+    return entry ?? null;
+  }
+
+  return null;
 }
 
 function decodePhotoSlug(slug: string): string {
@@ -239,6 +294,7 @@ export async function createPhotoEntry(input: PhotoInput): Promise<PhotoEntry> {
       published: fields.published ?? false,
       featured: fields.featured ?? false,
       author_id: fields.author_id ?? null,
+      access_level: fields.access_level ?? "public",
       published_at: fields.published ? new Date().toISOString() : null,
     })
     .select()
@@ -266,6 +322,7 @@ export async function updatePhotoEntry(id: string, input: Partial<PhotoInput>): 
   if (fields.caption !== undefined) payload.caption = fields.caption;
   if (fields.display_type !== undefined) payload.display_type = fields.display_type;
   if (fields.featured !== undefined) payload.featured = fields.featured;
+  if (fields.access_level !== undefined) payload.access_level = fields.access_level;
 
   if (fields.published !== undefined) {
     payload.published = fields.published;

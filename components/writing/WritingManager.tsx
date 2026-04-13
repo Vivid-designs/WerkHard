@@ -3,8 +3,16 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import type { WritingPiece } from "@/lib/writing-service";
+import type { AccessLevel } from "@/lib/types";
 import { formatDateShort } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+
+const ACCESS_BADGE: Record<AccessLevel, { label: string; className: string }> = {
+  public:      { label: "Publiek",  className: "text-sage border-sage/20 bg-sage/8" },
+  members:     { label: "Lede",     className: "text-parchment-400 border-ink-500 bg-ink-700" },
+  super_lario: { label: "SL",       className: "text-amber-400 border-amber-400/20 bg-amber-400/8" },
+  admin_only:  { label: "Admin",    className: "text-peach border-peach/20 bg-peach/8" },
+};
 
 export default function WritingManager() {
   const { session } = useAuth();
@@ -94,7 +102,7 @@ export default function WritingManager() {
           <table className="w-full border-collapse min-w-[640px]">
             <thead>
               <tr className="border-b border-ink-600 bg-ink-800">
-                {["Titel", "Kategorieë", "Status", "Datum", ""].map((h) => (
+                {["Titel", "Kategorieë", "Toegang", "Status", "Datum", ""].map((h) => (
                   <th
                     key={h}
                     className="text-left py-3 px-5 font-sans text-2xs tracking-widest uppercase text-parchment-600"
@@ -128,6 +136,15 @@ export default function WritingManager() {
                         <span className="font-sans text-xs text-parchment-700 italic">—</span>
                       )}
                     </div>
+                  </td>
+
+                  <td className="py-4 px-5 align-top">
+                    {(() => {
+                      const badge = ACCESS_BADGE[piece.access_level ?? "public"];
+                      return (
+                        <span className={`tag border ${badge.className}`}>{badge.label}</span>
+                      );
+                    })()}
                   </td>
 
                   <td className="py-4 px-5 align-top">

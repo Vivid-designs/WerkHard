@@ -2,6 +2,7 @@
  * Server-side only — import only in API routes and server components.
  */
 import { getSupabaseAdmin } from "./supabase-admin";
+import type { AccessLevel, UserRole } from "./types";
 
 function getClient() {
   try {
@@ -30,6 +31,7 @@ export interface WritingPiece {
   published: boolean;
   featured: boolean;
   author_id: string | null;
+  access_level: AccessLevel;
   created_at: string;
   updated_at: string;
   categories: Category[];
@@ -45,6 +47,7 @@ export interface WritingInput {
   cover_image_url?: string;
   published?: boolean;
   featured?: boolean;
+  access_level?: AccessLevel;
   category_ids?: string[];
   author_id?: string;
 }
@@ -122,10 +125,19 @@ function normalizeRow(row: DbRow): WritingPiece {
     published: Boolean((row.published as boolean | null) ?? (row.is_published as boolean | null) ?? false),
     featured: Boolean((row.featured as boolean | null) ?? false),
     author_id: (row.author_id as string | null) ?? null,
+    access_level: ((row.access_level as string | null) ?? "public") as AccessLevel,
     created_at: (row.created_at as string | null) ?? "",
     updated_at: (row.updated_at as string | null) ?? "",
     categories: [],
   };
+}
+
+function allowedAccessLevels(role: UserRole | null): AccessLevel[] {
+  const levels: AccessLevel[] = ["public"];
+  if (role) levels.push("members");
+  if (role === "super_lario" || role === "admin") levels.push("super_lario");
+  if (role === "admin") levels.push("admin_only");
+  return levels;
 }
 
 async function attachCategories(pieces: DbRow[]): Promise<WritingPiece[]> {
@@ -165,6 +177,49 @@ export async function getAllWritingAdmin(): Promise<WritingPiece[]> {
   }
 
   return attachCategories(data as DbRow[]);
+}
+
+export async function getPublishedWritingForRole(role: UserRole | null): Promise<WritingPiece[]> {
+  const client = getClient();
+  if (!client) return [];
+
+  const columns = await getWritingColumns();
+  const allowed = allowedAccessLevels(role);
+
+  const { data, error } = await client
+    .from("writing")
+    .select("*")
+    .eq(columns.published, true)
+    .in("access_level", allowed)
+    .order("created_at", { ascending: false });
+
+  if (error || !data) {
+    console.error("[writing-service] getPublishedWritingForRole failed", error);
+    return [];
+  }
+
+  return attachCategories(data as DbRow[]);
+}
+
+export async function getWritingBySlugForRole(slug: string, role: UserRole | null): Promise<WritingPiece | null> {
+  const client = getClient();
+  if (!client) return null;
+
+  const columns = await getWritingColumns();
+  const allowed = allowedAccessLevels(role);
+
+  const { data, error } = await client
+    .from("writing")
+    .select("*")
+    .eq("slug", slug)
+    .eq(columns.published, true)
+    .in("access_level", allowed)
+    .single();
+
+  if (error || !data) return null;
+
+  const [piece] = await attachCategories([data as DbRow]);
+  return piece ?? null;
 }
 
 export async function getPublishedWriting(): Promise<WritingPiece[]> {
@@ -253,11 +308,12 @@ export async function createWriting(input: WritingInput): Promise<WritingPiece> 
   if (!client) throw new Error("Supabase is not configured.");
 
   const columns = await getWritingColumns();
-  const { category_ids, body, published, ...rest } = input;
+  const { category_ids, body, published, access_level, ...rest } = input;
   const fields: Record<string, unknown> = {
     ...rest,
     [columns.body]: body,
     [columns.published]: published,
+    access_level: access_level ?? "public",
   };
 
   const { data, error } = await client.from("writing").insert(fields).select().single();
@@ -276,11 +332,12 @@ export async function updateWriting(id: string, input: Partial<WritingInput>): P
   if (!client) throw new Error("Supabase is not configured.");
 
   const columns = await getWritingColumns();
-  const { category_ids, body, published, ...rest } = input;
+  const { category_ids, body, published, access_level, ...rest } = input;
   const fields: Record<string, unknown> = { ...rest };
 
   if (body !== undefined) fields[columns.body] = body;
   if (published !== undefined) fields[columns.published] = published;
+  if (access_level !== undefined) fields.access_level = access_level;
 
   if (Object.keys(fields).length) {
     const { error } = await client.from("writing").update(fields).eq("id", id);

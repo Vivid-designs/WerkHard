@@ -44,3 +44,14 @@ export type Json =
   | null
   | { [key: string]: Json }
   | Json[];
+
+export type UserRole = 'normal' | 'super_lario' | 'admin';
+
+export type AccessLevel = 'public' | 'members' | 'super_lario' | 'admin_only';
+
+export const ACCESS_LEVEL_LABELS: Record<AccessLevel, string> = {
+  public:      'Publiek — almal (ook nie-aangemelde besoekers)',
+  members:     'Lede — enige aangemelde gebruiker',
+  super_lario: 'Super Lario Bros — eksklusief + admin',
+  admin_only:  'Slegs admin — privaat / konsepvoorskou',
+};

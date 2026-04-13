@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import FilmStripCarousel from "@/components/photos/FilmStripCarousel";
-import { getPhotoEntryBySlug, getPublishedPhotoEntries } from "@/lib/photo-service";
+import { getPhotoEntryBySlugForRole, getPublishedPhotoEntriesForRole } from "@/lib/photo-service";
+import { getAuthenticatedUserRole } from "@/lib/admin-users";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   try {
-    const entries = await getPublishedPhotoEntries();
+    const entries = await getPublishedPhotoEntriesForRole(null);
     return entries.map((entry) => ({ slug: entry.slug }));
   } catch {
     return [];
@@ -17,7 +19,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const entry = await getPhotoEntryBySlug(params.slug);
+  const entry = await getPhotoEntryBySlugForRole(params.slug, null);
   if (!entry) return { title: "Nie gevind nie" };
 
   return {
@@ -31,7 +33,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function PhotoDetailPage({ params }: { params: { slug: string } }) {
-  const entry = await getPhotoEntryBySlug(params.slug);
+  const cookieHeader = cookies().toString();
+  const role = await getAuthenticatedUserRole(
+    new Request("http://localhost", { headers: { cookie: cookieHeader } }),
+  );
+  const entry = await getPhotoEntryBySlugForRole(params.slug, role);
   if (!entry) notFound();
 
   return (

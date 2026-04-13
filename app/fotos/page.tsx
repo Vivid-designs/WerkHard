@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import PhotoEntryCard from "@/components/photos/PhotoEntryCard";
-import { getPublishedPhotoEntries } from "@/lib/photo-service";
+import { getPublishedPhotoEntriesForRole } from "@/lib/photo-service";
+import { getAuthenticatedUserRole } from "@/lib/admin-users";
 
 export const metadata: Metadata = {
   title: "Fotos",
@@ -10,7 +12,11 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function FotosPage() {
-  const entries = await getPublishedPhotoEntries();
+  const cookieHeader = cookies().toString();
+  const role = await getAuthenticatedUserRole(
+    new Request("http://localhost", { headers: { cookie: cookieHeader } }),
+  );
+  const entries = await getPublishedPhotoEntriesForRole(role);
   const featured = entries.filter((entry) => entry.featured);
   const rest = entries.filter((entry) => !entry.featured);
 

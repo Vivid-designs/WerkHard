@@ -8,8 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { isAdminUser } from "@/lib/admin-guard";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase-browser";
+import type { UserRole } from "@/lib/types";
 
 interface SignInCredentials {
   email: string;
@@ -21,6 +21,8 @@ interface AuthContextValue {
   session: Session | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isSuperLario: boolean;
+  role: UserRole | null;
   isLoading: boolean;
   signInWithPassword: (credentials: SignInCredentials) => Promise<string | null>;
   signOut: () => Promise<void>;
@@ -31,6 +33,8 @@ const AuthContext = createContext<AuthContextValue>({
   session: null,
   isAuthenticated: false,
   isAdmin: false,
+  isSuperLario: false,
+  role: null,
   isLoading: true,
   signInWithPassword: async () => "Supabase is not configured.",
   signOut: async () => {},
@@ -39,7 +43,19 @@ const AuthContext = createContext<AuthContextValue>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [role, setRole] = useState<UserRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  async function fetchRole(userId: string) {
+    if (!isSupabaseConfigured()) return;
+    const supabase = getSupabaseBrowserClient();
+    const { data } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .single();
+    setRole(((data as Record<string, unknown> | null)?.role as UserRole) ?? "normal");
+  }
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
@@ -51,7 +67,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) {
+        void fetchRole(u.id);
+      } else {
+        setRole(null);
+      }
       setIsLoading(false);
     });
 
@@ -59,7 +81,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) {
+        void fetchRole(u.id);
+      } else {
+        setRole(null);
+      }
       setIsLoading(false);
     });
 
@@ -95,7 +123,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         session,
         isAuthenticated: user !== null,
-        isAdmin: isAdminUser(user),
+        isAdmin: role === "admin",
+        isSuperLario: role === "super_lario",
+        role,
         isLoading,
         signInWithPassword,
         signOut,
