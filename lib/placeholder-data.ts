@@ -76,16 +76,10 @@ export const socialLinks: SocialLink[] = [
 ];
 
 export const categoryColors: Record<string, string> = {
-  Essay:      "text-lavender border-lavender/20",
-  Reflection: "text-lavender border-lavender/20",
-  Nadenking:  "text-lavender border-lavender/20",
-  Reading:    "text-sky      border-sky/20",
-  Aantekening:"text-sky      border-sky/20",
-  Craft:      "text-sage     border-sage/20",
-  Idee:       "text-sage     border-sage/20",
-  Travel:     "text-butter   border-butter/20",
-  Refleksie:  "text-butter   border-butter/20",
-  Journal:    "text-butter   border-butter/20",
-  BJJ:        "text-blush    border-blush/20",
-  Faith:      "text-butter   border-butter/20",
+  Essay: "text-rose     bg-rose/10     border-rose/20",
+  Reflection: "text-lavender bg-lavender/10 border-lavender/20",
+  Reading: "text-powder   bg-powder/10   border-powder/20",
+  Craft: "text-sage     bg-sage/10     border-sage/20",
+  Travel: "text-peach    bg-peach/10    border-peach/20",
+  Journal: "text-cream    bg-cream/10    border-cream/20",
 };

@@ -1,18 +1,18 @@
 "use client";
 
 const rawItems = [
-  { text: "Skrywes",       color: "var(--lavender)" },
-  { text: "BJJ",           color: "var(--blush)" },
-  { text: "Surf",          color: "var(--sky)" },
-  { text: "Ecclesiastes",  color: "var(--butter)" },
-  { text: "Cape Town",     color: "var(--muted)" },
-  { text: "Nietzsche",     color: "var(--lavender)" },
-  { text: "Die Drukker",   color: "var(--text)" },
-  { text: "Werk",          color: "var(--sage)" },
-  { text: "Dissipline",    color: "var(--blush)" },
-  { text: "Stilte",        color: "var(--muted)" },
-  { text: "Filosofie",     color: "var(--lavender)" },
-  { text: "Oseaan",        color: "var(--sky)" },
+  { text: "Skrywes",       color: "#b0a0c4" }, // lavender
+  { text: "BJJ",           color: "#c9a0a0" }, // rose
+  { text: "Surf",          color: "#9cb0c8" }, // powder
+  { text: "Ecclesiastes",  color: "#d4c8a8" }, // cream
+  { text: "Cape Town",     color: "#6a6460" }, // parchment-500
+  { text: "Nietzsche",     color: "#b0a0c4" }, // lavender
+  { text: "Die Drukker",   color: "#e4dfd4" }, // parchment-200
+  { text: "Werk",          color: "#9eb8a4" }, // sage
+  { text: "Dissipline",    color: "#c9a0a0" }, // rose
+  { text: "Stilte",        color: "#6a6460" }, // parchment-500
+  { text: "Filosofie",     color: "#b0a0c4" }, // lavender
+  { text: "Oseaan",        color: "#9cb0c8" }, // powder
 ];
 
 // Duplicate for seamless infinite loop
@@ -24,9 +24,10 @@ export default function Ticker() {
       style={{
         position: "relative",
         overflow: "hidden",
-        borderTop: "1px solid var(--border)",
-        borderBottom: "1px solid var(--border)",
-        padding: "0.6rem 0",
+        borderTop: "1px solid #222220",
+        borderBottom: "1px solid #222220",
+        padding: "0.65rem 0",
+        background: "#111110",
       }}
     >
       {/* Fade left edge */}
@@ -38,7 +39,7 @@ export default function Ticker() {
           top: 0,
           bottom: 0,
           width: "6rem",
-          background: "linear-gradient(to right, var(--bg), transparent)",
+          background: "linear-gradient(to right, #111110, transparent)",
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -52,7 +53,7 @@ export default function Ticker() {
           top: 0,
           bottom: 0,
           width: "6rem",
-          background: "linear-gradient(to left, var(--bg), transparent)",
+          background: "linear-gradient(to left, #111110, transparent)",
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -60,7 +61,6 @@ export default function Ticker() {
 
       {/* Track */}
       <div
-        className="ticker-track"
         style={{
           display: "flex",
           width: "max-content",
@@ -77,8 +77,8 @@ export default function Ticker() {
           <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
             <span
               style={{
-                fontFamily: "var(--mono)",
-                fontSize: "0.64rem",
+                fontFamily: "'Inter', system-ui, sans-serif",
+                fontSize: "0.6rem",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
                 color: item.color,
@@ -91,9 +91,8 @@ export default function Ticker() {
             <span
               aria-hidden="true"
               style={{
-                fontFamily: "var(--mono)",
                 fontSize: "0.5rem",
-                color: "var(--muted)",
+                color: "#3c3c38",
               }}
             >
               ✦
