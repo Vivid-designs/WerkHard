@@ -41,13 +41,8 @@
     @apply bg-rose/20 text-parchment-100;
   }
 
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { @apply bg-ink-900; }
-  ::-webkit-scrollbar-thumb { @apply bg-ink-600 rounded-full; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-ink-500; }
-
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  html { scrollbar-width: none; -ms-overflow-style: none; }
+  ::-webkit-scrollbar { display: none; }
 }
 
 @layer utilities {
