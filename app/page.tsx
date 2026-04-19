@@ -4,7 +4,6 @@ import Ticker from "@/components/sections/Ticker";
 import FeaturedPosts from "@/components/sections/FeaturedPosts";
 import AboutPreview from "@/components/sections/AboutPreview";
 import Newsletter from "@/components/sections/Newsletter";
-import ScrollbarHider from "@/components/ScrollbarHider";
 import { getPublishedWritingForRole } from "@/lib/writing-service";
 import { getAuthenticatedUserRole } from "@/lib/admin-users";
 
@@ -23,7 +22,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <ScrollbarHider />
       <Hero />
       <Ticker />
       <FeaturedPosts posts={posts} />
