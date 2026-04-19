@@ -1,137 +1,49 @@
-import Link from "next/link";
+import Button from "@/components/ui/Button";
 
 export default function AboutPreview() {
   return (
-    <section
-      aria-labelledby="about-heading"
-      className="reveal"
-      style={{ borderBottom: "1px solid var(--border)" }}
-    >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          maxWidth: "80rem",
-          margin: "0 auto",
-        }}
-      >
-        {/* Left column — oversized display heading */}
-        <div
-          style={{
-            borderRight: "1px solid var(--border)",
-            padding: "5rem 3rem 5rem 3rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <p
-            className="mono-label"
-            style={{ marginBottom: "2rem" }}
-          >
-            Wie ek is
-          </p>
-
+    <section aria-labelledby="about-heading" className="border-b border-ink-700">
+      <div className="container-narrow section-spacing">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-center">
           <div
-            id="about-heading"
-            style={{ lineHeight: 1 }}
-            aria-label="Skrywer. Bouer. Denker."
+            className="hidden md:flex md:col-span-4 lg:col-span-3 flex-col items-center gap-5"
+            aria-hidden="true"
           >
-            {/* "Skrywer." — outline text */}
-            <div
-              aria-hidden="true"
-              style={{
-                fontFamily: "var(--serif)",
-                fontWeight: 900,
-                fontSize: "clamp(3rem, 6vw, 5rem)",
-                color: "transparent",
-                WebkitTextStroke: "1px var(--text)",
-                lineHeight: 1.05,
-                display: "block",
-              }}
-            >
-              Skrywer.
+            <div className="w-28 h-28 rounded-full border-2 border-ink-600 bg-ink-800 flex items-center justify-center text-parchment-600">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
             </div>
-            {/* "Bouer." — solid sage */}
-            <div
-              aria-hidden="true"
-              style={{
-                fontFamily: "var(--serif)",
-                fontWeight: 900,
-                fontSize: "clamp(3rem, 6vw, 5rem)",
-                color: "var(--sage)",
-                lineHeight: 1.05,
-                display: "block",
-              }}
-            >
-              Bouer.
-            </div>
-            {/* "Denker." — italic lavender */}
-            <div
-              aria-hidden="true"
-              style={{
-                fontFamily: "var(--serif)",
-                fontWeight: 900,
-                fontStyle: "italic",
-                fontSize: "clamp(3rem, 6vw, 5rem)",
-                color: "var(--lavender)",
-                lineHeight: 1.05,
-                display: "block",
-              }}
-            >
-              Denker.
-            </div>
-          </div>
-        </div>
-
-        {/* Right column — copy + link */}
-        <div
-          style={{
-            padding: "5rem 3rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "1.1rem",
-              fontFamily: "var(--body)",
-              fontSize: "0.95rem",
-              lineHeight: 1.85,
-              color: "var(--muted)",
-              maxWidth: "42ch",
-              marginBottom: "2.5rem",
-            }}
-          >
-            <p>
-              Ek is nuuskierig oor hoe dinge werk — hoe idees vorm kry, hoe mense dink,
-              en hoe tegnologie die wêreld om ons verander. Hierdie webwerf is waar ek
-              deel wat ek doen en wat ek wil doen.
-            </p>
-            <p>
-              Van sagteware en ingenieurswerk tot kreatiewe projekte en persoonlike groei
-              — ek hou daarvan om konsepte in iets werkliks te verander.
-            </p>
+            <div className="w-px h-16 bg-gradient-to-b from-ink-600 to-transparent" />
+            <span className="font-serif italic text-2xl text-parchment-600 select-none">E.W.</span>
           </div>
 
-          <Link
-            href="/about"
-            className="about-cta"
-            style={{
-              fontFamily: "var(--mono)",
-              fontSize: "0.62rem",
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              padding: "0.6rem 1.2rem",
-              alignSelf: "flex-start",
-              display: "inline-block",
-            }}
-          >
-            Meer oor my →
-          </Link>
+          <div className="md:col-span-8 lg:col-span-9">
+            <p className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-4">
+              Wie ek is
+            </p>
+            <h2
+              id="about-heading"
+              className="font-serif text-display-sm text-parchment-100 mb-6"
+            >
+              Skrywer. Bouer. Denker.
+            </h2>
+            <div className="space-y-4 font-body text-parchment-400 text-base leading-relaxed mb-8 max-w-reading">
+              <p>
+                Ek is nuuskierig oor hoe dinge werk — hoe idees vorm kry, hoe mense dink,
+                en hoe tegnologie die wêreld om ons verander. Hierdie webwerf is waar ek
+                deel wat ek doen en wat ek wil doen.
+              </p>
+              <p>
+                Van sagteware en ingenieurswerk tot kreatiewe projekte en persoonlike groei
+                — ek hou daarvan om konsepte in iets werkliks te verander.
+              </p>
+            </div>
+            <Button as="link" href="/about" variant="secondary" size="md">
+              Meer oor my
+            </Button>
+          </div>
         </div>
       </div>
     </section>

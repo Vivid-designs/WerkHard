@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Button from "@/components/ui/Button";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
@@ -21,163 +22,72 @@ export default function Newsletter() {
   }
 
   return (
-    <section
-      aria-labelledby="newsletter-heading"
-      className="reveal"
-      style={{ background: "var(--bg2)", borderBottom: "1px solid var(--border)" }}
-    >
-      <div
-        style={{
-          maxWidth: "80rem",
-          margin: "0 auto",
-          padding: "5rem 3rem",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "4rem",
-          alignItems: "center",
-        }}
-      >
-        {/* Left: heading */}
-        <div>
-          <p className="mono-label" style={{ marginBottom: "0.75rem" }}>
-            No. 04 — Bly in kontak
+    <section aria-labelledby="newsletter-heading" className="bg-ink-950">
+      <div className="container-narrow section-spacing">
+        <div className="max-w-xl mx-auto text-center">
+          <div className="ornament text-parchment-600 text-sm mb-8 max-w-xs mx-auto" aria-hidden="true">
+            ✦
+          </div>
+
+          <p className="font-sans text-2xs tracking-widest uppercase text-parchment-500 mb-3">
+            Bly in kontak
           </p>
           <h2
             id="newsletter-heading"
-            style={{
-              fontFamily: "var(--serif)",
-              fontWeight: 700,
-              fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
-              lineHeight: 1.15,
-              color: "var(--text)",
-              marginBottom: "1rem",
-            }}
+            className="font-serif text-display-sm text-parchment-100 mb-5"
           >
-            Nuwe essays,
-            <br />
-            <em>af en toe.</em>
+            Nuwe essays, af en toe.
           </h2>
-          <p
-            style={{
-              fontFamily: "var(--body)",
-              fontSize: "0.9rem",
-              lineHeight: 1.8,
-              color: "var(--muted)",
-              maxWidth: "36ch",
-            }}
-          >
-            Volg my hier as jy af en toe &apos;n email van my af wil ontvang.
-            Geen algoritme. Geen skedule.
+          <p className="font-body text-parchment-400 text-sm leading-relaxed mb-10 max-w-reading mx-auto">
+            Volg my hier as jy af en toe &apos;n email van my af wil ontvang. Geen algoritme. Geen skedule.
           </p>
-        </div>
 
-        {/* Right: form */}
-        <div>
           {status === "success" ? (
-            <p
-              style={{
-                fontFamily: "var(--body)",
-                fontSize: "0.95rem",
-                color: "var(--sage)",
-              }}
-            >
-              {message}
-            </p>
+            <p className="font-body text-sage text-sm">{message}</p>
           ) : (
             <form
               onSubmit={handleSubmit}
-              style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+              className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto"
             >
-              <label
-                htmlFor="newsletter-email"
-                className="mono-label"
-                style={{ marginBottom: "0.25rem" }}
+              <label htmlFor="newsletter-email" className="sr-only">E-posadres</label>
+              <input
+                id="newsletter-email"
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="jou@epos.com"
+                required
+                autoComplete="email"
+                className={[
+                  "flex-1 bg-ink-800 text-parchment-200 placeholder:text-parchment-600",
+                  "border border-ink-500 rounded-md px-4 py-2.5 text-sm font-body",
+                  "transition-colors duration-200",
+                  "focus:outline-none focus:border-parchment-500 focus:ring-1 focus:ring-parchment-500/30",
+                ].join(" ")}
+              />
+              <Button
+                as="button"
+                type="submit"
+                variant="rose"
+                size="md"
+                disabled={status === "loading"}
+                className={status === "loading" ? "opacity-60 cursor-wait" : ""}
               >
-                E-posadres
-              </label>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <input
-                  id="newsletter-email"
-                  type="email"
-                  name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="jou@epos.com"
-                  required
-                  autoComplete="email"
-                  style={{
-                    flex: 1,
-                    background: "var(--bg)",
-                    color: "var(--text)",
-                    border: "1px solid var(--border)",
-                    padding: "0.65rem 1rem",
-                    fontFamily: "var(--body)",
-                    fontSize: "0.9rem",
-                    outline: "none",
-                    transition: "border-color 0.2s",
-                  }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = "var(--muted)")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
-                />
-                <button
-                  type="submit"
-                  disabled={status === "loading"}
-                  style={{
-                    fontFamily: "var(--mono)",
-                    fontSize: "0.62rem",
-                    letterSpacing: "0.15em",
-                    textTransform: "uppercase",
-                    color: "var(--sky)",
-                    border: "1px solid var(--sky)",
-                    background: "transparent",
-                    padding: "0.65rem 1.25rem",
-                    cursor: status === "loading" ? "wait" : "pointer",
-                    opacity: status === "loading" ? 0.6 : 1,
-                    transition: "background 0.2s, color 0.2s",
-                    whiteSpace: "nowrap",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (status !== "loading") {
-                      e.currentTarget.style.background = "var(--sky)";
-                      e.currentTarget.style.color = "var(--bg)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.color = "var(--sky)";
-                  }}
-                >
-                  {status === "loading" ? "Stuur…" : "Teken in"}
-                </button>
-              </div>
-
-              {status === "error" && (
-                <p
-                  role="alert"
-                  style={{
-                    fontFamily: "var(--mono)",
-                    fontSize: "0.6rem",
-                    letterSpacing: "0.1em",
-                    color: "var(--blush)",
-                  }}
-                >
-                  {message || "Iets het fout gegaan. Probeer asseblief weer."}
-                </p>
-              )}
-
-              <p
-                style={{
-                  fontFamily: "var(--mono)",
-                  fontSize: "0.58rem",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "var(--muted)",
-                }}
-              >
-                Geen spam. Teken enige tyd af.
-              </p>
+                {status === "loading" ? "Stuur…" : "Teken in"}
+              </Button>
             </form>
           )}
+
+          {status === "error" && (
+            <p className="mt-3 font-sans text-xs text-peach" role="alert">
+              {message || "Iets het fout gegaan. Probeer asseblief weer."}
+            </p>
+          )}
+
+          <p className="mt-5 font-sans text-xs text-parchment-600">
+            Geen spam. Teken enige tyd af.
+          </p>
         </div>
       </div>
     </section>
