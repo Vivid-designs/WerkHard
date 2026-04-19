@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import Hero from "@/components/sections/Hero";
-import Ticker from "@/components/sections/Ticker";
 import FeaturedPosts from "@/components/sections/FeaturedPosts";
 import AboutPreview from "@/components/sections/AboutPreview";
 import Newsletter from "@/components/sections/Newsletter";
@@ -23,7 +22,6 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
-      <Ticker />
       <FeaturedPosts posts={posts} />
       <AboutPreview />
       <Newsletter />
